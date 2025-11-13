@@ -10,6 +10,11 @@
 !.yarn/releases
 !.yarn/versions
 
+# PNPM store
+.pnpm-store
+.pnpm
+.pnpm-debug.log
+
 # testing
 /coverage
 
@@ -30,8 +35,10 @@ yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
 
-# env files (can opt-in for committing if needed)
+# env files
 .env*
+# but not these two
+!.env.example
 
 # vercel
 .vercel
@@ -39,3 +46,6 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# docker
+.dockerignore

@@ -1,0 +1,19 @@
+# Ignorar entorno local
+.venv
+__pycache__/
+*.pyc
+
+# Ignorar control de versiones
+.git
+.gitignore
+
+# Ignorar archivos temporales y editoriales
+.env
+*.log
+.idea
+.vscode
+
+# Ignorar dependencias pesadas o locales
+*.egg-info/
+dist/
+build/
