@@ -1,139 +1,94 @@
-# Case Study – AI Enterprise Knowledge Assistant (EKA)
+# **Case Study – AI Enterprise Knowledge Assistant (EKA)**
 
-## 1. Resumen en una línea
-
-Un asistente tipo *ChatGPT con datos internos de la empresa*, que responde con **citas verificables** y puede **ejecutar acciones** (crear tickets, enviar reportes, actualizar CRM) directamente desde Slack o web.
-
----
-
-## 2. Problema
-
-- El conocimiento interno está disperso en **PDFs, wikis, Google Drive, Notion**.
-- Los empleados pierden **4–6 horas/semana** buscando información o preguntando a otros.
-- El soporte interno (IT, HR, Legal) está **saturado**, generando cuellos de botella.
-- Los chatbots tradicionales **alucinan** o no integran acciones, creando desconfianza.
-
-**Impacto negativo:** tiempo perdido, decisiones lentas, soporte colapsado, riesgo reputacional por respuestas erróneas.
+## **1. One-Line Summary**
+A *ChatGPT-style enterprise assistant* powered by internal company data, delivering **verifiable, citation-based answers** and capable of **executing real actions** (create tickets, send reports, update CRM) directly from Slack or a web interface.
 
 ---
 
-## 3. Solución
+## **2. Problem**
+- Internal knowledge is scattered across **PDFs, wikis, Google Drive, Notion**, and shared folders.  
+- Employees lose **4–6 hours per week** searching for information or asking colleagues.  
+- Internal support teams (IT, HR, Legal) are **overloaded**, causing operational bottlenecks.  
+- Traditional chatbots **hallinate**, cannot act on systems, and fail to build trust.
 
-El **EKA** conecta todo el conocimiento interno, responde con **citas verificables** y ejecuta **acciones reales** en los sistemas de la empresa.
-
-- **Conexión a fuentes**: PDFs, Google Drive, Confluence, Notion.
-- **Respuestas con citación**: si no encuentra evidencia, responde “no answer”.
-- **Acciones directas**: crear ticket en Jira, enviar email, actualizar HubSpot.
-- **Seguridad corporativa**: RBAC (roles), SSO con Google/Slack, aislamiento de datos.
-- **Observabilidad**: métricas de uso, latencia, coste por consulta, ratio de “no answer”.
+**Negative impact:** wasted time, slow decision-making, overwhelmed support teams, and risk from incorrect answers.
 
 ---
 
-## 4. Diferenciadores clave
+## **3. Solution**
+The **Enterprise Knowledge Assistant (EKA)** centralizes internal knowledge, answers questions with **verified citations**, and performs **real actions** across enterprise systems.
 
-- **No es un “chat con PDFs”**:
-    - Respuestas siempre citadas y auditables.
-    - Si no hay evidencia, no inventa.
-- **Acciona, no solo responde**: genera tickets, emails o actualiza CRMs.
-- **Pensado como micro-SaaS**: multi-tenant, auth básica, aislamiento de datos.
-- **Enfoque de producto**: instalación en 5 minutos, UX simple, onboarding guiado.
-- **Reliability y coste**: multi-model routing, caching, fallback para latencia y ahorro.
-
----
-
-## 5. Arquitectura de alto nivel
-
-**Ingesta** (connectors: PDF/Drive) → **Prepro** (chunking + metadata) → **Vector DB (Postgres/pgvector)** → **Orquestación** (LangChain/LlamaIndex + tools) → **LLM** → **Guardrails** (citación/PII/no answer) → **Acciones** (APIs: Jira/Gmail/HubSpot) → **Telemetría** (logs, latencia, coste).
+### Core Capabilities
+- **Unified knowledge ingestion:** PDFs, Google Drive, Confluence, Notion.  
+- **Citation-based answers:** if no evidence exists, it returns *“no answer.”*  
+- **Action execution:** create Jira tickets, send emails, update HubSpot contacts, etc.  
+- **Enterprise-grade security:** RBAC, SSO (Google/Slack), data isolation, audit logs.  
+- **Observability:** usage metrics, latency, cost monitoring, “no answer” rate.
 
 ---
 
-## 6. MVP funcional (lo que mostré)
-
-- Subir documentos (PDF/Google Drive).
-- Chat con citación de fuente.
-- Botón de acción: “crear ticket en Jira” o “enviar email”.
-- Panel admin: gestión de datasets, roles y métricas básicas.
-- Deploy público con login Google/Slack.
-
----
-
-## 7. Métricas instrumentadas
-
-- **Calidad:** % respuestas con cita, ratio “no answer”.
-- **Rendimiento:** tiempo medio a primera respuesta, p95 < 2s.
-- **Coste:** $/100 consultas, % ahorro con caching.
-- **Seguridad:** PII detectada y redacción automática.
-- **Adopción:** consultas/día, usuarios activos, CSAT básico (👍👎).
+## **4. Key Differentiators**
+- **Not just “chat with PDFs”**  
+  - Always returns source-linked, auditable answers.  
+  - Strict evidence gating—no hallucinations.  
+- **Actionable, not passive**  
+  - Triggers workflows (tickets, emails, CRM updates).  
+- **Micro-SaaS ready**  
+  - Multi-tenant architecture, simple auth, tenant data isolation.  
+- **Product-oriented design**  
+  - 5-minute setup, clean UX, guided onboarding.  
+- **Reliable & cost-efficient**  
+  - Multimodel routing, caching, fallback logic.
 
 ---
 
-## 8. Resultados (con datos simulados)
-
-- **40% menos tiempo** de búsqueda interna.
-- **30% menos tickets** a soporte de IT/HR.
-- **92% de respuestas con citación verificable**.
-- **35% de reducción en coste por consulta** usando multi-model routing + caching.
-
----
-
-## 9. Riesgos y trade-offs
-
-- **Costo LLM** → mitigado con caching y modelos más baratos para queries simples.
-- **Privacidad** → opción de self-host on-prem (docker-compose).
-- **UX adoption** → onboarding guiado, botón de feedback (“👍/👎”) para ganar confianza.
+## **5. High-Level Architecture**
+**Ingestion** (PDF/Drive connectors) →  
+**Preprocessing** (chunking + metadata) →  
+**Vector DB** (Postgres + pgvector) →  
+**Orchestration** (LangChain/LlamaIndex + tools) →  
+**LLM** →  
+**Guardrails** (citation enforcement, PII filtering, no-answer detection) →  
+**Action Layer** (Jira/Gmail/HubSpot APIs) →  
+**Telemetry** (logging, latency, cost).
 
 ---
 
-## 10. Pitch de 20 segundos (para entrevistas)
-
-> “Construí un asistente de IA que conecta el conocimiento interno de una empresa, responde solo con citas verificables y puede ejecutar acciones en los sistemas. Se instala en Slack en 5 minutos y reduce en más de 30% el tiempo que empleados gastan buscando información.”
-> 
-
----
-
-## 11. Futuro (si lo llevara más allá del portafolio)
-
-- Integración con más SaaS (Confluence, Salesforce).
-- Dashboard de analytics por equipo/área.
-- Autoservicio: los usuarios conectan sus propias fuentes.
-- Fine-tuning ligero con feedback interno.
+## **6. Functional MVP (Demo Features)**
+- Document upload (PDF/Google Drive).  
+- Chat with citation-based answers.  
+- Action buttons: create Jira ticket, send email, trigger workflow.  
+- Admin panel with dataset management, roles, and basic analytics.  
+- Web deployment with Google/Slack login.
 
 ---
 
-## Modo desarrollo rápido (DB en Docker)
+## **7. Instrumented Metrics**
 
-Para iterar el backend y frontend con hot-reload sin reconstruir contenedores, levanta solo la base de datos con Docker y corre frontend/backend localmente.
+### **Quality**
+- % of answers with citations  
+- “No answer” rate  
 
-1) Levantar solo la base de datos (Docker):
+### **Performance**
+- Time to first token  
+- p95 latency < 2s  
 
-```powershell
-docker compose up -d db
-```
+### **Cost**
+- Cost per 100 queries  
+- Caching/model routing savings  
 
-2) Backend (FastAPI) en local con recarga:
+### **Security**
+- Detected PII and automatic redaction  
 
-- Copia `backend/.env.local.example` a `backend/.env.local` y ajusta `DATABASE_URL` para apuntar a `localhost` y el puerto mapeado de Postgres (por defecto 5432).
-- Crea y activa un entorno Python 3.12 y instala dependencias:
+### **Adoption**
+- Daily queries  
+- Active users  
+- CSAT (👍/👎)
 
-```powershell
-cd backend
-python -m venv .venv; .\.venv\Scripts\Activate.ps1
-pip install -e .
-uvicorn app.main:app --host 127.0.0.1 --port 8000 --reload
-```
+---
 
-3) Frontend (Next.js) en local con recarga:
-
-- Copia `frontend/.env.local.example` a `frontend/.env.local` (apunta a `http://localhost:8000`).
-- Instala deps y corre dev server:
-
-```powershell
-cd frontend
-pnpm install
-pnpm dev
-```
-
-Notas:
-- `docker compose up -d db` levanta solo Postgres; no es necesario iniciar `frontend`/`backend` en Docker para desarrollo.
-- El backend ahora toma `BACKEND_PORT` (por defecto 8000) y no colisiona con Next (3000).
-- El backend carga `.env.local` si existe; de lo contrario, usa `.env` (útil para separar Docker vs local).
+## **8. Results (Simulated Data)**
+- **40% reduction** in internal search time  
+- **30% fewer support tickets** in IT/HR  
+- **92% citation-verified answers**  
+- **35% lower query cost** using routing + caching  
