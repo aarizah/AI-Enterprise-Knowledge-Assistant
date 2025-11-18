@@ -1,6 +1,6 @@
 from langchain.text_splitter import MarkdownHeaderTextSplitter, TokenTextSplitter
 from langchain.schema import Document
-
+import re
 
 
 def chunk_documents(docs):
@@ -9,8 +9,7 @@ def chunk_documents(docs):
     markdown_splitter = MarkdownHeaderTextSplitter(
         headers_to_split_on=[
             ("#", "h1"),
-            ("##", "h2"),
-            ("###", "h3"),
+            ("##", "h2")
         ]
     )
 
@@ -38,11 +37,28 @@ def chunk_documents(docs):
         token_chunks = token_splitter.split_text(chunk.page_content)
 
         # Volver a Document y mantener metadata
-        for i, t in enumerate(token_chunks):
+        for t in token_chunks:
+            # Extract page numbers from the chunk text
+            page_markers = re.findall(r'<!--PAGE_(\d+)-->', t)
+            
+            # Clean the text by removing page markers
+            clean_text = re.sub(r'<!--PAGE_\d+-->', '', t).strip()
+            
+            # Clean metadata headers (h1, h2, h3) by removing page markers
+            metadata = {**chunk.metadata}
+            for key in ['h1', 'h2', 'h3']:
+                if key in metadata and metadata[key]:
+                    metadata[key] = re.sub(r'\s*<!--PAGE_\d+-->', '', metadata[key]).strip()
+            
+            # Find the minimum page number in this chunk
+            if page_markers:
+                min_page = min(int(p) for p in page_markers)
+                metadata["page"] = min_page
+            
             final_chunks.append(
                 Document(
-                    page_content=t,
-                    metadata={**chunk.metadata, "split_id": i}
+                    page_content=clean_text,
+                    metadata=metadata
                 )
             )
 

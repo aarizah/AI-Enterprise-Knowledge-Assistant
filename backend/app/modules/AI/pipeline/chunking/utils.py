@@ -1,6 +1,7 @@
 import docx
 import fitz  # PyMuPDF
 from langchain.schema import Document
+from pathlib import Path
 
 def process_docx(file_path):
     try:
@@ -29,7 +30,7 @@ def process_docx(file_path):
 
         return [Document(
             page_content=structured_text,
-            metadata={"source": str(file_path), "type": "docx"}
+            metadata={"source": Path(file_path).name, "type": "docx"}
         )]
 
     except Exception as e:
@@ -46,7 +47,7 @@ def process_md(file_path):
         
         return [Document(
             page_content=text.strip(),
-            metadata={"source": str(file_path), "type": "md"})
+            metadata={"source": Path(file_path).name, "type": "md"})
         ]
     except Exception as e:
         print(f"Error procesando MD {file_path}: {e}")
@@ -57,7 +58,7 @@ def process_pdf(file_path):
         doc = fitz.open(str(file_path))
         elements = []
 
-        for page_num, page in enumerate(doc):
+        for page_num, page in enumerate(doc, start=1):
             # Extract text blocks with position and font size info
             blocks = page.get_text("dict")["blocks"]
             
@@ -93,21 +94,24 @@ def process_pdf(file_path):
                     # Short lines (< 100 chars) with large font or bold are likely headings
                     is_short = len(text) < 100
                     
+                    # Add invisible page marker at the END of each text element to preserve markdown header detection
+                    page_marker = f"<!--PAGE_{page_num}-->"
+                    
                     if max_font_size > 16 or (is_bold and max_font_size > 14 and is_short):
-                        elements.append(f"# {text}")
+                        elements.append(f"# {text} {page_marker}")
                     elif max_font_size > 14 or (is_bold and max_font_size > 12 and is_short):
-                        elements.append(f"## {text}")
+                        elements.append(f"## {text} {page_marker}")
                     elif max_font_size > 12 or (is_bold and is_short):
-                        elements.append(f"### {text}")
+                        elements.append(f"### {text} {page_marker}")
                     else:
-                        elements.append(text)
+                        elements.append(f"{text} {page_marker}")
 
         # Join with double line breaks to respect Markdown format
         structured_text = "\n\n".join(elements)
 
         return [Document(
             page_content=structured_text,
-            metadata={"source": str(file_path), "type": "pdf"}
+            metadata={"source": Path(file_path).name, "type": "pdf"}
         )]
 
     except Exception as e:
