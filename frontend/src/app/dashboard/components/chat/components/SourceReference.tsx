@@ -2,7 +2,6 @@
 
 import { Badge } from "@/components/ui/badge";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
 import { FileText, BookOpen } from "lucide-react";
 import type { SourceReference } from "@/app/dashboard/types";
@@ -12,7 +11,6 @@ interface SourceReferencesProps {
 }
 
 export function SourceReferences({ references }: SourceReferencesProps) {
-  console.log("REFERENCES:", references);
   if (!references || references.length === 0) {
     return null;
   }
@@ -29,8 +27,9 @@ export function SourceReferences({ references }: SourceReferencesProps) {
       <PopoverContent 
         side="right" 
         align="start"
-        className="w-96 p-0"
+        className="w-160 p-0"
         sideOffset={8}
+        collisionPadding={{ top: 20, bottom: 40, left: 20, right: 20 }}
       >
         <div className="p-4 border-b bg-gray-50">
           <h3 className="font-semibold text-sm text-gray-900 flex items-center gap-2">
@@ -42,10 +41,10 @@ export function SourceReferences({ references }: SourceReferencesProps) {
           </p>
         </div>
 
-        <ScrollArea className="max-h-[500px]">
-          <div className="p-4 space-y-4">
+        <div className="max-h-[calc(100vh-120px)] overflow-y-auto">
+          <div className="p-5 space-y-4">
             {references.map((reference, index) => (
-              <div key={reference.id} className="space-y-2">
+              <div key={index} className="space-y-2">
                 {/* Header with document info */}
                 <div className="flex items-start gap-2">
                   <Badge variant="outline" className="text-xs font-mono shrink-0 mt-0.5">
@@ -55,22 +54,13 @@ export function SourceReferences({ references }: SourceReferencesProps) {
                   <div className="flex-1 min-w-0">
                     <div className="flex items-start justify-between gap-2">
                       <span className="font-medium text-sm text-gray-900 break-words">
-                        {reference.documentName}
+                        {reference.metadata?.source || "Unknown Document"}
                       </span>
                       
                       <div className="flex items-center gap-1 shrink-0">
-                        {reference.pageNumber && (
+                        {reference.metadata?.page && (
                           <Badge variant="secondary" className="text-xs">
-                            p. {reference.pageNumber}
-                          </Badge>
-                        )}
-                        {reference.relevanceScore && (
-                          <Badge 
-                            variant="outline" 
-                            className="text-xs"
-                            title={`Relevance: ${(reference.relevanceScore * 100).toFixed(1)}%`}
-                          >
-                            {(reference.relevanceScore * 100).toFixed(0)}%
+                            p. {reference.metadata.page}
                           </Badge>
                         )}
                       </div>
@@ -82,29 +72,35 @@ export function SourceReferences({ references }: SourceReferencesProps) {
                 <div className="pl-8">
                   <div className="bg-gray-50 border border-gray-200 rounded-md p-3">
                     <p className="text-xs text-gray-700 leading-relaxed whitespace-pre-wrap">
-                      {reference.excerpt}
+                      {reference.page_content}
                     </p>
                   </div>
 
                   {/* Metadata */}
-                  {reference.metadata && Object.keys(reference.metadata).length > 0 && (
+                  {reference.metadata && (
                     <div className="mt-2 space-y-1">
-                      {reference.metadata.author && (
+                      {reference.metadata.h1 && (
                         <div className="flex items-start gap-2">
-                          <span className="text-xs text-gray-500 font-medium min-w-[60px]">Author:</span>
-                          <span className="text-xs text-gray-700">{reference.metadata.author}</span>
+                          <span className="text-xs text-gray-500 font-medium min-w-[60px]">H1:</span>
+                          <span className="text-xs text-gray-700">{reference.metadata.h1}</span>
                         </div>
                       )}
-                      {reference.metadata.date && (
-                        <div className="flex items-start gap-2">
-                          <span className="text-xs text-gray-500 font-medium min-w-[60px]">Date:</span>
-                          <span className="text-xs text-gray-700">{reference.metadata.date}</span>
-                        </div>
-                      )}
-                      {reference.metadata.section && (
+                      {reference.metadata.h2 && (
                         <div className="flex items-start gap-2">
                           <span className="text-xs text-gray-500 font-medium min-w-[60px]">Section:</span>
-                          <span className="text-xs text-gray-700">{reference.metadata.section}</span>
+                          <span className="text-xs text-gray-700">{reference.metadata.h2}</span>
+                        </div>
+                      )}
+                      {reference.metadata.h3 && (
+                        <div className="flex items-start gap-2">
+                          <span className="text-xs text-gray-500 font-medium min-w-[60px]">Subsection:</span>
+                          <span className="text-xs text-gray-700">{reference.metadata.h3}</span>
+                        </div>
+                      )}
+                      {reference.metadata.type && (
+                        <div className="flex items-start gap-2">
+                          <span className="text-xs text-gray-500 font-medium min-w-[60px]">Type:</span>
+                          <span className="text-xs text-gray-700 uppercase">{reference.metadata.type}</span>
                         </div>
                       )}
                     </div>
@@ -118,7 +114,7 @@ export function SourceReferences({ references }: SourceReferencesProps) {
               </div>
             ))}
           </div>
-        </ScrollArea>
+        </div>
       </PopoverContent>
     </Popover>
   );

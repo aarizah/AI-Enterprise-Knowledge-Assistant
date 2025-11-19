@@ -2,7 +2,6 @@ from pathlib import Path
 from typing import List
 from app.modules.AI.pipeline.chunking.utils import process_docx, process_md, process_pdf
 
-
 def process_files(file_paths: List[Path]):
     """
     Process a list of file paths.

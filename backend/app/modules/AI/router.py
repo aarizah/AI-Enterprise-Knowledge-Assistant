@@ -8,7 +8,6 @@ from pathlib import Path
 from app.modules.AI.schemas import QueryRequest
 from app.modules.AI.pipeline.upload.uploader import upload_files
 
-
 router = APIRouter(prefix="/ai", tags=["AI"])
 
 BASE_DIR = Path(__file__).resolve().parent  # -> /app/app/modules/AI

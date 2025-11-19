@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { FileText, User, Bot, Copy, ThumbsUp, ThumbsDown } from "lucide-react";
 import { Message, FileAttachment } from "@/app/dashboard/types";
 import { ChatService } from "@/app/dashboard/chatService";
+import { SourceReferences } from "./SourceReference";
 
 interface ChatMessageProps {
   message: Message;
@@ -14,10 +15,6 @@ interface ChatMessageProps {
 
 export function ChatMessage({ message }: ChatMessageProps) {
   const formatFileSize = ChatService.formatFileSize;
-
-  const copyToClipboard = () => {
-    navigator.clipboard.writeText(message.content);
-  };
 
   return (
     <div className="flex gap-3 group">
@@ -68,31 +65,9 @@ export function ChatMessage({ message }: ChatMessageProps) {
           </p>
         </Card>
 
-        {message.sender === "assistant" && (
-          <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={copyToClipboard}
-              className="h-8 px-2"
-            >
-              <Copy className="w-3 h-3" />
-            </Button>
-            <Button
-              variant="ghost"
-              size="sm"
-              className="h-8 px-2"
-            >
-              <ThumbsUp className="w-3 h-3" />
-            </Button>
-            <Button
-              variant="ghost"
-              size="sm"
-              className="h-8 px-2"
-            >
-              <ThumbsDown className="w-3 h-3" />
-            </Button>
-          </div>
+        {/* Source References - only for assistant messages */}
+        {message.sender === "assistant" && message.sources && (
+          <SourceReferences references={message.sources} />
         )}
       </div>
     </div>

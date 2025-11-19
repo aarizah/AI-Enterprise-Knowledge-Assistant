@@ -33,6 +33,13 @@ export function useChat() {
       // Generate AI response
       const aiResponse = await ChatService.generateResponse(content, attachments);
       const assistantMessage = ChatService.createMessage(aiResponse, "assistant");
+      
+      // Attach sources if available
+      const sources = ChatService.getLastSources();
+      if (sources) {
+        assistantMessage.sources = sources;
+      }
+      
       addMessage(assistantMessage);
     } catch (error) {
       console.error('Error generating response:', error);

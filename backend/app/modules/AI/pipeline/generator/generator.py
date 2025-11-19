@@ -51,5 +51,5 @@ def generate_answer_from_db(query: str) -> Dict:
     # 7. Return answer + source documents
     return {
         "answer": result["answer"],
-        "source_documents": result.get("context", [])
+        "sources": result.get("context", [])
     }

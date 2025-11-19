@@ -37,7 +37,7 @@ def chunk_documents(docs):
         token_chunks = token_splitter.split_text(chunk.page_content)
 
         # Volver a Document y mantener metadata
-        for t in token_chunks:
+        for i, t in enumerate(token_chunks):
             # Extract page numbers from the chunk text
             page_markers = re.findall(r'<!--PAGE_(\d+)-->', t)
             
@@ -45,7 +45,7 @@ def chunk_documents(docs):
             clean_text = re.sub(r'<!--PAGE_\d+-->', '', t).strip()
             
             # Clean metadata headers (h1, h2, h3) by removing page markers
-            metadata = {**chunk.metadata}
+            metadata = {**chunk.metadata, "split_id": i}
             for key in ['h1', 'h2', 'h3']:
                 if key in metadata and metadata[key]:
                     metadata[key] = re.sub(r'\s*<!--PAGE_\d+-->', '', metadata[key]).strip()

@@ -8,7 +8,6 @@ from pathlib import Path
 # ROUTE to the folder containing documents --- change as needed
 #folder_path = Path("documents/synthetic_best")
 # Process files in the specified folder
-
  
 def gen_and_store_embeddings(file_paths: List[Path]):
 

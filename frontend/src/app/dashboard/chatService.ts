@@ -3,6 +3,15 @@ import { CHAT_CONSTANTS } from '@/app/dashboard/constants';
 import { settings } from "@/lib/settings";
 
 export class ChatService {
+  private static _lastSources: any = null;
+
+  // Get and clear last sources
+  static getLastSources() {
+    const sources = this._lastSources;
+    this._lastSources = null;
+    return sources;
+  }
+
   // Generate AI response (now sends to real backend)
   static async generateResponse(message: string, attachments?: FileAttachment[]): Promise<string> {
     try {
@@ -147,6 +156,10 @@ export class ChatService {
       }
 
       const data = await response.json();
+      
+      // Store sources temporarily to attach to message later
+      this._lastSources = data.answer.sources || null;
+      
       return data.answer.answer || "Could not process the query.";
     } catch (error) {
       console.error('Error sending message with files:', error);
