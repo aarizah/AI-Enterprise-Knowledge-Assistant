@@ -20,17 +20,17 @@ export function HeroSection({ onGetStarted, onUploadDocument, stats }: HeroSecti
         <div className="space-y-8">
           {/* Logo and Title */}
           <div className="flex justify-center">
-            <div className="w-20 h-20 bg-blue-600 rounded-3xl flex items-center justify-center shadow-xl">
-              <Zap className="w-10 h-10 text-white" />
+            <div className="w-20 h-20 bg-primary rounded-3xl flex items-center justify-center shadow-xl">
+              <Zap className="w-10 h-10 text-primary-foreground" />
             </div>
           </div>
           
           <div className="space-y-4">
-            <h1 className="text-5xl sm:text-6xl font-bold text-gray-900 leading-tight">
+            <h1 className="text-5xl sm:text-6xl font-bold text-foreground leading-tight">
               Your Enterprise Knowledge
-              <span className="text-blue-600"> Assistant</span>
+              <span className="text-primary"> Assistant</span>
             </h1>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
+            <p className="text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
               Connect your company's knowledge, get instant answers with citations, and execute actions.
               Reduce search time by 40% with AI Enterprise Knowledge Assistant.
             </p>
@@ -41,7 +41,7 @@ export function HeroSection({ onGetStarted, onUploadDocument, stats }: HeroSecti
             <Button
               onClick={onGetStarted}
               size="lg"
-              className="bg-blue-600 hover:bg-blue-700 text-lg px-8 py-6"
+              className="text-lg px-8 py-6"
             >
               <MessageSquare className="w-5 h-5 mr-2" />
               Get Started
@@ -59,17 +59,17 @@ export function HeroSection({ onGetStarted, onUploadDocument, stats }: HeroSecti
 
           {/* Trust Indicators */}
           <div className="pt-12">
-            <p className="text-sm text-gray-500 mb-8">Trusted by enterprise teams worldwide</p>
+            <p className="text-sm text-muted-foreground mb-8">Trusted by enterprise teams worldwide</p>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
               {stats.map((stat, index) => (
                 <div key={index} className="text-center">
                   <div className="flex justify-center mb-2">
-                    <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
-                      <stat.icon className="w-4 h-4 text-blue-600" />
+                    <div className="w-8 h-8 bg-accent/20 rounded-lg flex items-center justify-center">
+                      <stat.icon className="w-4 h-4 text-accent" />
                     </div>
                   </div>
-                  <div className="text-2xl font-bold text-gray-900">{stat.value}</div>
-                  <div className="text-sm text-gray-600">{stat.label}</div>
+                  <div className="text-2xl font-bold text-foreground">{stat.value}</div>
+                  <div className="text-sm text-muted-foreground">{stat.label}</div>
                 </div>
               ))}
             </div>

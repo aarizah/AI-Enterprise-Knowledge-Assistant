@@ -41,18 +41,14 @@ export default function Dashboard() {
   };
 
   return (
-    <div className="flex h-screen bg-gray-50">
+    <div className="flex h-screen bg-gradient-to-br from-background via-muted/20 to-accent/5 overflow-hidden">
       {/* Sidebar Navigation */}
       <DashboardSidebar />
 
       {/* Main Chat Interface */}
-      <div className="flex-1 flex flex-col">
+      <div className="flex-1 flex flex-col backdrop-blur-sm">
         {/* Chat Header with Upload Options */}
-        <ChatHeader
-          selectedFiles={selectedFiles}
-          onFilesSelected={addFiles}
-          onFileRemoved={removeFile}
-        />
+
 
         {/* Messages Area */}
         <div className="flex-1 overflow-y-auto">

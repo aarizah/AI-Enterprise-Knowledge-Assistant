@@ -47,16 +47,16 @@ export function ChatInput({
   const canSend = inputMessage.trim() || selectedFiles.length > 0;
 
   return (
-    <div className="bg-white border-t border-gray-200 p-4">
+    <div className=" px-8 py-6 shadow-lg">
       <div className="max-w-4xl mx-auto">
         {/* File attachments preview */}
         {selectedFiles.length > 0 && (
           <div className="mb-3">
             <div className="flex flex-wrap gap-2">
               {selectedFiles.map((file) => (
-                <div key={file.id} className="flex items-center gap-2 bg-blue-50 border border-blue-200 rounded-lg p-2">
-                  <FileSearch className="w-4 h-4 text-blue-600" />
-                  <span className="text-sm text-blue-900">{file.name}</span>
+                <div key={file.id} className="flex items-center gap-2 bg-gradient-to-r from-accent/10 to-accent/5 border border-accent/30 rounded-xl px-3 py-2 hover:shadow-md transition-all animate-in fade-in slide-in-from-bottom-2">
+                  <FileSearch className="w-4 h-4 text-accent" />
+                  <span className="text-sm font-medium text-accent-foreground">{file.name}</span>
                   <Badge variant="secondary" className="text-xs">
                     {ChatService.formatFileSize(file.size)}
                   </Badge>
@@ -64,9 +64,9 @@ export function ChatInput({
                     variant="ghost"
                     size="sm"
                     onClick={() => onFileRemoved(file.id)}
-                    className="h-auto p-1 hover:bg-red-100"
+                    className="h-auto p-1 hover:bg-destructive/10"
                   >
-                    <X className="w-3 h-3 text-red-600" />
+                    <X className="w-3 h-3 text-destructive" />
                   </Button>
                 </div>
               ))}
@@ -85,7 +85,7 @@ export function ChatInput({
               onChange={(e) => setInputMessage(e.target.value)}
               onKeyPress={handleKeyPress}
               disabled={disabled}
-              className="min-h-[60px] max-h-[200px] resize-none pr-12 border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+              className=" max-h-[200px] resize-none pr-12 rounded-2xl border-border/50 focus:border-accent/50 focus:ring-accent/20 shadow-sm font-normal text-base leading-relaxed"
             />
             <div className="absolute right-2 bottom-2 flex gap-1">
               <Dialog>
@@ -116,13 +116,13 @@ export function ChatInput({
           <Button 
             onClick={handleSendMessage}
             disabled={!canSend || disabled}
-            className="self-end bg-blue-600 hover:bg-blue-700"
+            className="self-end h-12 px-6 bg-gradient-to-r from-primary to-accent hover:shadow-lg hover:shadow-primary/25 hover:-translate-y-0.5 transition-all duration-200 rounded-2xl font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            <Send className="w-4 h-4" />
+            <Send className="w-5 h-5" />
           </Button>
         </div>
         
-        <p className="text-xs text-gray-500 mt-2 text-center">
+        <p className="text-xs text-muted-foreground mt-2 text-center">
           {MESSAGES.KEYBOARD_SHORTCUTS} • {selectedFiles.length} archivos adjuntos
         </p>
       </div>

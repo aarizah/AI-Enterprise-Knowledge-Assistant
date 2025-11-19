@@ -19,7 +19,7 @@ export default function Home() {
   const navigateToDashboard = () => handleNavigation("/dashboard");
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50">
+    <div className="min-h-screen bg-gradient-to-br from-muted/30 via-background to-accent/5">
       {/* Header */}
       <LandingHeader 
         onLogin={navigateToAuth}

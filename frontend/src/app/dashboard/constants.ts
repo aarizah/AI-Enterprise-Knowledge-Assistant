@@ -13,8 +13,8 @@ export const UI_CONSTANTS = {
 } as const;
 
 export const MESSAGES = {
-  INITIAL_ASSISTANT_MESSAGE: "Hello! I am your AI legal assistant. I can help you analyze documents, answer legal questions, and provide research assistance. How can I help you today?",
+  INITIAL_ASSISTANT_MESSAGE: "Hello! I am your AI assistant. I can help you analyze documents, answer questions, and provide research assistance. How can I help you today?",
   TYPING_INDICATOR: "typing...",
-  FILE_UPLOAD_PLACEHOLDER: "Ask a legal question or describe your situation...",
+  FILE_UPLOAD_PLACEHOLDER: "Ask any question or describe your situation...",
   KEYBOARD_SHORTCUTS: "Press Enter to send, Shift + Enter for a new line",
 } as const;

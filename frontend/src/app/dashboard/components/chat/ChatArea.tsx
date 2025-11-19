@@ -23,8 +23,8 @@ export function ChatArea({ messages, isTyping }: ChatAreaProps) {
   }, [messages, isTyping]);
 
   return (
-    <ScrollArea className="flex-1 p-4">
-      <div className="max-w-4xl mx-auto space-y-6">
+    <ScrollArea className="flex-1 px-8 py-6">
+      <div className="max-w-4xl mx-auto space-y-8">
         {messages.map((message) => (
           <ChatMessage key={message.id} message={message} />
         ))}

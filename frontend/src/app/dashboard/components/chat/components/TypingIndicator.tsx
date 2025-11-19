@@ -6,22 +6,22 @@ import { Zap } from "lucide-react";
 
 export function TypingIndicator() {
   return (
-    <div className="flex gap-3">
-      <Avatar className="w-8 h-8 flex-shrink-0">
-        <AvatarFallback className="bg-blue-100">
-          <Zap className="w-4 h-4 text-blue-600" />
+    <div className="flex gap-3 animate-in fade-in slide-in-from-bottom-4 duration-500 justify-start">
+      <Avatar className="w-9 h-9 flex-shrink-0 ring-2 ring-background shadow-md">
+        <AvatarFallback className="bg-gradient-to-br from-primary/20 to-accent/20">
+          <Zap className="w-4 h-4 text-accent animate-pulse" />
         </AvatarFallback>
       </Avatar>
-      <div className="flex-1">
-        <div className="flex items-center gap-2 mb-2">
-          <span className="font-medium text-sm">Legal Assistant</span>
-          <span className="text-xs text-gray-500">is thinking...</span>
+      <div className="flex flex-col space-y-2 max-w-[80%] items-start">
+        <div className="flex items-center gap-2 px-1">
+          <span className="font-semibold text-xs text-muted-foreground">Legal Assistant</span>
+          <span className="text-xs text-muted-foreground/60 font-medium animate-pulse">is thinking...</span>
         </div>
-        <Card className="p-4 bg-white border-blue-200 max-w-20">
-          <div className="flex gap-1">
-            <div className="w-2 h-2 bg-blue-400 rounded-full animate-bounce"></div>
-            <div className="w-2 h-2 bg-blue-400 rounded-full animate-bounce" style={{ animationDelay: "0.1s" }}></div>
-            <div className="w-2 h-2 bg-blue-400 rounded-full animate-bounce" style={{ animationDelay: "0.2s" }}></div>
+        <Card className="px-5 py-3 bg-card/95 backdrop-blur-sm shadow-md rounded-2xl rounded-tl-md border-border/50">
+          <div className="flex gap-1.5">
+            <div className="w-2 h-2 bg-gradient-to-br from-primary to-accent rounded-full animate-bounce"></div>
+            <div className="w-2 h-2 bg-gradient-to-br from-primary to-accent rounded-full animate-bounce" style={{ animationDelay: "0.15s" }}></div>
+            <div className="w-2 h-2 bg-gradient-to-br from-primary to-accent rounded-full animate-bounce" style={{ animationDelay: "0.3s" }}></div>
           </div>
         </Card>
       </div>

@@ -15,39 +15,47 @@ interface ChatMessageProps {
 
 export function ChatMessage({ message }: ChatMessageProps) {
   const formatFileSize = ChatService.formatFileSize;
+  const isUser = message.sender === "user";
+
+  // Format time consistently to avoid hydration mismatch
+  const formatTime = (date: Date) => {
+    const hours = date.getHours().toString().padStart(2, '0');
+    const minutes = date.getMinutes().toString().padStart(2, '0');
+    return `${hours}:${minutes}`;
+  };
 
   return (
-    <div className="flex gap-3 group">
-      <Avatar className="w-8 h-8 flex-shrink-0">
-        <AvatarFallback className={message.sender === "assistant" ? "bg-blue-100" : "bg-gray-100"}>
-          {message.sender === "user" ? (
-            <User className="w-4 h-4" />
-          ) : (
-            <Bot className="w-4 h-4 text-blue-600" />
-          )}
-        </AvatarFallback>
-      </Avatar>
+    <div className={`flex gap-3 group animate-in fade-in slide-in-from-bottom-4 duration-500 ${
+      isUser ? "justify-end" : "justify-start"
+    }`}>
+      {/* Avatar - only show for assistant on the left */}
+      {!isUser && (
+        <Avatar className="w-9 h-9 flex-shrink-0 ring-2 ring-background shadow-md">
+          <AvatarFallback className="bg-gradient-to-br from-primary/20 to-accent/20">
+            <Bot className="w-4 h-4 text-accent" />
+          </AvatarFallback>
+        </Avatar>
+      )}
       
-      <div className="flex-1 space-y-2">
-        <div className="flex items-center gap-2">
-          <span className="font-medium text-sm">
-            {message.sender === "user" ? "You" : "Legal Assistant"}
+      <div className={`flex flex-col space-y-2 ${isUser ? "max-w-[75%] items-end" : "max-w-[80%] items-start"}`}>
+        {/* Header with name and time */}
+        <div className="flex items-center gap-2 px-1">
+          <span className="font-semibold text-xs text-muted-foreground">
+            {isUser ? "You" : "Legal Assistant"}
           </span>
-          <span className="text-xs text-gray-500">
-            {message.timestamp.toLocaleTimeString([], { 
-              hour: '2-digit', 
-              minute: '2-digit' 
-            })}
+          <span className="text-xs text-muted-foreground/60 font-medium">
+            {formatTime(message.timestamp)}
           </span>
         </div>
         
+        {/* Attachments */}
         {message.attachments && message.attachments.length > 0 && (
-          <div className="space-y-2">
+          <div className="space-y-1.5 w-full">
             {message.attachments.map((file) => (
-              <div key={file.id} className="flex items-center gap-2 p-2 bg-gray-50 rounded-lg border">
-                <FileText className="w-4 h-4 text-gray-600" />
-                <span className="text-sm text-gray-900 flex-1">{file.name}</span>
-                <Badge variant="secondary" className="text-xs">
+              <div key={file.id} className="flex items-center gap-2 p-2.5 bg-muted/50 rounded-lg border border-border/50 hover:bg-muted hover:shadow-sm transition-all">
+                <FileText className="w-3.5 h-3.5 text-accent" />
+                <span className="text-xs font-medium text-card-foreground flex-1 truncate">{file.name}</span>
+                <Badge variant="secondary" className="text-[10px] px-1.5 py-0">
                   {formatFileSize(file.size)}
                 </Badge>
               </div>
@@ -55,21 +63,33 @@ export function ChatMessage({ message }: ChatMessageProps) {
           </div>
         )}
         
-        <Card className={`p-4 ${
-          message.sender === "assistant" 
-            ? "bg-white border-blue-200" 
-            : "bg-blue-50 border-blue-200"
+        {/* Message bubble */}
+        <Card className={`p-4 shadow-md hover:shadow-lg transition-all duration-200 ${
+          isUser
+            ? "bg-gradient-to-br from-primary/30 to-primary/30 text-primary-foreground rounded-3xl rounded-tr-md border-0" 
+            : "bg-card/95 backdrop-blur-sm rounded-2xl rounded-tl-md border-border/50"
         }`}>
-          <p className="text-sm text-gray-900 whitespace-pre-wrap leading-relaxed">
+          <p className={`text-sm whitespace-pre-wrap leading-relaxed ${
+            isUser ? "text-card-foreground" : "text-card-foreground"
+          }`}>
             {message.content}
           </p>
         </Card>
 
         {/* Source References - only for assistant messages */}
-        {message.sender === "assistant" && message.sources && (
+        {!isUser && message.sources && (
           <SourceReferences references={message.sources} />
         )}
       </div>
+
+      {/* Avatar for user on the right */}
+      {isUser && (
+        <Avatar className="w-9 h-9 flex-shrink-0 ring-2 ring-primary/20 shadow-md">
+          <AvatarFallback className="bg-muted">
+            <User className="w-4 h-4" />
+          </AvatarFallback>
+        </Avatar>
+      )}
     </div>
   );
 }

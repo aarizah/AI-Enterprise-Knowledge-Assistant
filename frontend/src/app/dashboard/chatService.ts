@@ -36,6 +36,10 @@ export class ChatService {
       }
 
       const data = await response.json();
+      
+      // Store sources temporarily to attach to message later
+      this._lastSources = data.answer.sources || null;
+      
       return data.answer.answer || "Could not process the query.";
     } catch (error) {
       console.error('Error generating response:', error);

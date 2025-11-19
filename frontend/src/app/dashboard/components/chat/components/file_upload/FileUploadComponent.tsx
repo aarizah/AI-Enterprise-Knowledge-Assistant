@@ -50,20 +50,20 @@ export function FileUploadComponent({
     const extension = fileName.split('.').pop()?.toLowerCase();
     switch (extension) {
       case 'pdf':
-        return <FileText className="w-4 h-4 text-red-600" />;
+        return <FileText className="w-4 h-4 text-destructive" />;
       case 'doc':
       case 'docx':
-        return <FileText className="w-4 h-4 text-blue-600" />;
+        return <FileText className="w-4 h-4 text-accent" />;
       case 'jpg':
       case 'jpeg':
       case 'png':
       case 'gif':
-        return <FileImage className="w-4 h-4 text-green-600" />;
+        return <FileImage className="w-4 h-4 text-accent" />;
       case 'xls':
       case 'xlsx':
-        return <FileSpreadsheet className="w-4 h-4 text-green-600" />;
+        return <FileSpreadsheet className="w-4 h-4 text-accent" />;
       default:
-        return <File className="w-4 h-4 text-gray-600" />;
+        return <File className="w-4 h-4 text-muted-foreground" />;
     }
   };
 
@@ -97,13 +97,13 @@ export function FileUploadComponent({
       {uploadErrors.length > 0 && (
         <div className="space-y-2">
           {uploadErrors.map((error, index) => (
-            <div key={index} className="p-3 bg-red-50 border border-red-200 rounded-lg">
-              <p className="text-sm text-red-700">{error}</p>
+            <div key={index} className="p-3 bg-destructive/10 border border-destructive rounded-lg">
+              <p className="text-sm text-destructive">{error}</p>
             </div>
           ))}
           <button
             onClick={clearErrors}
-            className="text-xs text-red-600 hover:text-red-800 underline"
+            className="text-xs text-destructive hover:text-destructive/80 underline"
           >
             Clear errors
           </button>
@@ -112,21 +112,21 @@ export function FileUploadComponent({
 
       {/* Drag and Drop Area */}
       <Card 
-        className="border-2 border-dashed border-gray-300 hover:border-gray-400 transition-colors cursor-pointer"
+        className="border-2 border-dashed border-border hover:border-accent/50 transition-colors cursor-pointer"
         onDragOver={handleDragOver}
         onDrop={handleDrop}
         onClick={() => fileInputRef.current?.click()}
       >
         <div className="p-8 text-center">
-          <Upload className="w-12 h-12 mx-auto text-gray-400 mb-4" />
+          <Upload className="w-12 h-12 mx-auto text-muted-foreground mb-4" />
           <div className="space-y-2">
-            <p className="text-sm font-medium text-gray-900">
+            <p className="text-sm font-medium text-card-foreground">
               Upload legal documents
             </p>
-            <p className="text-sm text-gray-500">
+            <p className="text-sm text-muted-foreground">
               Drag and drop files here, or click to browse
             </p>
-            <p className="text-xs text-gray-400">
+            <p className="text-xs text-muted-foreground/70">
               Supported: {acceptedTypes.join(", ")} (Max {formatFileSize(maxFileSize)} per file)
             </p>
           </div>
@@ -145,21 +145,21 @@ export function FileUploadComponent({
       {/* Selected Files */}
       {selectedFiles.length > 0 && (
         <div className="space-y-2">
-          <p className="text-sm font-medium text-gray-900">
+          <p className="text-sm font-medium text-card-foreground">
             Selected Files ({selectedFiles.length}/{maxFiles})
           </p>
           <div className="space-y-2">
             {selectedFiles.map((file) => (
               <div
                 key={file.id}
-                className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg border"
+                className="flex items-center gap-3 p-3 bg-muted rounded-lg border"
               >
                 {getFileIcon(file.name)}
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-gray-900 truncate">
+                  <p className="text-sm font-medium text-card-foreground truncate">
                     {file.name}
                   </p>
-                  <p className="text-xs text-gray-500">
+                  <p className="text-xs text-muted-foreground">
                     {formatFileSize(file.size)}
                   </p>
                 </div>
@@ -173,9 +173,9 @@ export function FileUploadComponent({
                     e.stopPropagation();
                     onFileRemoved(file.id);
                   }}
-                  className="h-8 w-8 p-0 hover:bg-red-100"
+                  className="h-8 w-8 p-0 hover:bg-destructive/10"
                 >
-                  <X className="w-4 h-4 text-red-600" />
+                  <X className="w-4 h-4 text-destructive" />
                 </Button>
               </div>
             ))}
