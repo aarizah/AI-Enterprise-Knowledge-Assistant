@@ -24,7 +24,8 @@ def init_db():
         conn.commit()
 
     import app.modules.users.models
-    import app.modules.AI.pipeline.embeddings.models
+    import app.modules.AI.pipeline.upload.models  # Importar modelo Document
+    import app.modules.AI.pipeline.embeddings.models  # Importar modelo Embedding
     
     #Base.metadata.drop_all(bind=engine)
     Base.metadata.create_all(bind=engine)

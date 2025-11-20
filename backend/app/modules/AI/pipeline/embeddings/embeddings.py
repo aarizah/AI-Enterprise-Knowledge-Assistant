@@ -6,11 +6,11 @@ from app.core.database import SessionLocal
 from app.modules.AI.pipeline.embeddings.models import Embedding
 import os
 
-def generate_and_store_embeddings(final_chunks):
+def generate_and_store_embeddings(final_chunks, document_id: int = None):
     # GENERATE EMBEDDINGS
     embeddings_with_meta = generate_embeddings_from_chunks(final_chunks)
     # STORE EMBEDDINGS
-    store_embeddings(embeddings_with_meta)
+    store_embeddings(embeddings_with_meta, document_id)
 
 def generate_embeddings_from_chunks(final_chunks):
     # 1. Initialize Voyage AI client
@@ -41,14 +41,15 @@ def generate_embeddings_from_chunks(final_chunks):
     #print("Text snippet:", embeddings_with_meta[0]["text"][:100])
     return embeddings_with_meta
 
-def store_embeddings(embeddings_with_meta: list[dict]):
+def store_embeddings(embeddings_with_meta: list[dict], document_id: int = None):
     db = SessionLocal()
     try:
         for item in embeddings_with_meta:
             embedding_record = Embedding(
                 embedding=item["embedding"],
                 meta_data=item["metadata"],
-                text=item["text"]
+                text=item["text"],
+                document_id=document_id
             )
             db.add(embedding_record)
         db.commit()
