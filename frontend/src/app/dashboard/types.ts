@@ -9,6 +9,7 @@ export interface FileAttachment {
 export interface SourceReference {
   id: null;
   page_content: string;
+  confidence?: number; // Confidence score 0-100 for this specific source
   metadata?: {
     h1?: string;
     h2?: string;
@@ -27,6 +28,7 @@ export interface Message {
   timestamp: Date;
   attachments?: FileAttachment[];
   sources?: SourceReference[];
+  confidence?: number; // Confidence score 0-100 for assistant responses
 }
 
 export interface ChatState {

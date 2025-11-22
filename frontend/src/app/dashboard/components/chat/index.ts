@@ -4,3 +4,4 @@ export { ChatHeader } from "./ChatHeader";
 export { ChatInput } from "./ChatInput";
 export { FileUploadComponent } from "./components/file_upload/FileUploadComponent";
 export { TypingIndicator } from "./components/TypingIndicator";
+export { SourcePanel } from "./components/SourcePanel";

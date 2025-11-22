@@ -1,17 +1,17 @@
 "use client";
 
 import { useState, useCallback, useRef, useEffect } from 'react';
-import { Message, FileAttachment } from "@/app/dashboard/types";
+import { Message, FileAttachment, SourceReference } from "@/app/dashboard/types";
 import { ChatService } from '@/app/dashboard/chatService';
 import { MESSAGES } from '@/app/dashboard/constants';
 
 export function useChat() {
-  const [messages, setMessages] = useState<Message[]>([
-    ChatService.createMessage(MESSAGES.INITIAL_ASSISTANT_MESSAGE, "assistant")
-  ]);
+  const [messages, setMessages] = useState<Message[]>([]);
   const [isTyping, setIsTyping] = useState(false);
   const [selectedFiles, setSelectedFiles] = useState<FileAttachment[]>([]);
   const [inputMessage, setInputMessage] = useState("");
+  const [selectedSources, setSelectedSources] = useState<SourceReference[] | null>(null);
+  const [isSourcePanelOpen, setIsSourcePanelOpen] = useState(false);
 
   const addMessage = useCallback((message: Message) => {
     setMessages(prev => [...prev, message]);
@@ -40,6 +40,12 @@ export function useChat() {
         assistantMessage.sources = sources;
       }
       
+      // Attach confidence if available
+      const confidence = ChatService.getLastConfidence();
+      if (confidence !== undefined) {
+        assistantMessage.confidence = confidence;
+      }
+      
       addMessage(assistantMessage);
     } catch (error) {
       console.error('Error generating response:', error);
@@ -65,15 +71,37 @@ export function useChat() {
     setSelectedFiles([]);
   }, []);
 
+  const resetChat = useCallback(() => {
+    setMessages([]);
+    setInputMessage("");
+    setSelectedFiles([]);
+    setSelectedSources(null);
+    setIsSourcePanelOpen(false);
+  }, []);
+
+  const openSourcePanel = useCallback((sources: SourceReference[]) => {
+    setSelectedSources(sources);
+    setIsSourcePanelOpen(true);
+  }, []);
+
+  const closeSourcePanel = useCallback(() => {
+    setIsSourcePanelOpen(false);
+  }, []);
+
   return {
     messages,
     isTyping,
     selectedFiles,
     inputMessage,
+    selectedSources,
+    isSourcePanelOpen,
     setInputMessage,
     sendMessage,
     addFiles,
     removeFile,
     clearFiles,
+    resetChat,
+    openSourcePanel,
+    closeSourcePanel,
   };
 }

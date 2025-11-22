@@ -47,82 +47,57 @@ export function ChatInput({
   const canSend = inputMessage.trim() || selectedFiles.length > 0;
 
   return (
-    <div className=" px-8 py-6 shadow-lg">
-      <div className="max-w-4xl mx-auto">
+    <div className="px-6 py-4">
+      <div className="max-w-3xl mx-auto">
         {/* File attachments preview */}
         {selectedFiles.length > 0 && (
-          <div className="mb-3">
-            <div className="flex flex-wrap gap-2">
+          <div className="mb-2">
+            <div className="flex flex-wrap gap-1.5">
               {selectedFiles.map((file) => (
-                <div key={file.id} className="flex items-center gap-2 bg-gradient-to-r from-accent/10 to-accent/5 border border-accent/30 rounded-xl px-3 py-2 hover:shadow-md transition-all animate-in fade-in slide-in-from-bottom-2">
-                  <FileSearch className="w-4 h-4 text-accent" />
-                  <span className="text-sm font-medium text-accent-foreground">{file.name}</span>
-                  <Badge variant="secondary" className="text-xs">
+                <div key={file.id} className="flex items-center gap-1.5 bg-accent/10 border border-accent/30 rounded-lg px-2 py-1 hover:shadow-sm transition-all">
+                  <FileSearch className="w-3 h-3 text-accent" />
+                  <span className="text-xs font-medium text-accent-foreground">{file.name}</span>
+                  <Badge variant="secondary" className="text-[10px] px-1 py-0">
                     {ChatService.formatFileSize(file.size)}
                   </Badge>
                   <Button
                     variant="ghost"
                     size="sm"
                     onClick={() => onFileRemoved(file.id)}
-                    className="h-auto p-1 hover:bg-destructive/10"
+                    className="h-auto p-0.5 hover:bg-destructive/10"
                   >
                     <X className="w-3 h-3 text-destructive" />
                   </Button>
                 </div>
               ))}
             </div>
-            <Separator className="mt-3" />
           </div>
         )}
         
         {/* Input area */}
-        <div className="flex gap-2">
-          <div className="flex-1 relative">
-            <Textarea
-              ref={textareaRef}
-              placeholder={MESSAGES.FILE_UPLOAD_PLACEHOLDER}
-              value={inputMessage}
-              onChange={(e) => setInputMessage(e.target.value)}
-              onKeyPress={handleKeyPress}
-              disabled={disabled}
-              className=" max-h-[200px] resize-none pr-12 rounded-2xl border-border/50 focus:border-accent/50 focus:ring-accent/20 shadow-sm font-normal text-base leading-relaxed"
-            />
-            <div className="absolute right-2 bottom-2 flex gap-1">
-              <Dialog>
-                <DialogTrigger asChild>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="h-8 w-8 p-0"
-                    disabled={disabled}
-                  >
-                    <Paperclip className="w-4 h-4" />
-                  </Button>
-                </DialogTrigger>
-                <DialogContent className="max-w-2xl">
-                  <DialogHeader>
-                    <DialogTitle>Subir Documentos</DialogTitle>
-                  </DialogHeader>
-                  <FileUploadComponent
-                    selectedFiles={selectedFiles}
-                    onFilesSelected={onFilesSelected}
-                    onFileRemoved={onFileRemoved}
-                  />
-                </DialogContent>
-              </Dialog>
-            </div>
-          </div>
+        <div className="relative bg-white rounded-2xl shadow-sm border border-border/50 px-4 py-2.5 flex items-center gap-2">
+          <Textarea
+            ref={textareaRef}
+            placeholder={MESSAGES.FILE_UPLOAD_PLACEHOLDER}
+            value={inputMessage}
+            onChange={(e) => setInputMessage(e.target.value)}
+            onKeyPress={handleKeyPress}
+            disabled={disabled}
+            className="flex-1 min-h-[36px] max-h-[100px] resize-none border-0 focus-visible:ring-0 focus-visible:ring-offset-0 shadow-none p-0 text-sm leading-normal placeholder:text-muted-foreground/60"
+            rows={1}
+          />
           
           <Button 
             onClick={handleSendMessage}
             disabled={!canSend || disabled}
-            className="self-end h-12 px-6 bg-gradient-to-r from-primary to-accent hover:shadow-lg hover:shadow-primary/25 hover:-translate-y-0.5 transition-all duration-200 rounded-2xl font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
+            size="sm"
+            className="h-8 w-8 p-0 bg-gradient-to-r from-primary to-accent hover:shadow-md transition-all duration-200 rounded-xl disabled:opacity-50 disabled:cursor-not-allowed flex-shrink-0"
           >
-            <Send className="w-5 h-5" />
+            <Send className="w-4 h-4" />
           </Button>
         </div>
         
-        <p className="text-xs text-muted-foreground mt-2 text-center">
+        <p className="text-[11px] text-muted-foreground mt-2 text-center">
           {MESSAGES.KEYBOARD_SHORTCUTS} • {selectedFiles.length} archivos adjuntos
         </p>
       </div>

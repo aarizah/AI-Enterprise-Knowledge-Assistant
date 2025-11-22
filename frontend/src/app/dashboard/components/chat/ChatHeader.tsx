@@ -14,37 +14,34 @@ interface ChatHeaderProps {
 
 export function ChatHeader({ selectedFiles, onFilesSelected, onFileRemoved }: ChatHeaderProps) {
   return (
-    <div className="bg-card/80 backdrop-blur-xl border-b border-border/50 px-8 py-6 shadow-sm">
+    <div className="bg-white border-b border-border/50 px-6 py-3.5 shadow-sm">
       <div className="flex items-center justify-between">
-        <div>
-          <h2 className="text-2xl font-bold text-card-foreground tracking-tight mb-1">AI Assistant</h2>
-          <p className="text-sm text-muted-foreground font-medium">Ask questions, upload documents, get documents insights</p>
+        <div className="flex items-center gap-2.5">
+          <h2 >AI Knowledge Assistant</h2>
+          <div className="flex items-center gap-1.5 px-2.5 py-0.5 bg-emerald-50 rounded-full border border-emerald-200">
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+            <span className="text-[11px] font-medium text-emerald-700">247 docs ready</span>
+          </div>
         </div>
-        <div className="flex gap-3">
-          <Dialog>
-            <DialogTrigger asChild>
-              <Button variant="outline" size="default" className="rounded-xl border-accent/20 hover:bg-accent/10 hover:border-accent/40 hover:shadow-md transition-all duration-200 font-medium">
-                <FileSearch className="w-4 h-4 mr-2" />
-                Document Analysis
-              </Button>
-            </DialogTrigger>
-            <DialogContent className="max-w-2xl">
-              <DialogHeader>
-                <DialogTitle>Upload Legal Documents</DialogTitle>
-              </DialogHeader>
-              <FileUploadComponent
-                selectedFiles={selectedFiles}
-                onFilesSelected={onFilesSelected}
-                onFileRemoved={onFileRemoved}
-              />
-            </DialogContent>
-          </Dialog>
-          
-          <Button variant="outline" size="sm">
-            <Upload className="w-4 h-4 mr-2" />
-            Quick Upload/OOS
-          </Button>
-        </div>
+        
+        <Dialog>
+          <DialogTrigger asChild>
+            <Button variant="outline" size="sm" className="h-8 rounded-lg border-muted-foreground/20 hover:bg-muted/50 transition-all">
+              <Upload className="w-3.5 h-3.5 mr-1.5" />
+              <span className="text-xs font-medium">Quick Upload</span>
+            </Button>
+          </DialogTrigger>
+          <DialogContent className="max-w-2xl">
+            <DialogHeader>
+              <DialogTitle>Upload Documents</DialogTitle>
+            </DialogHeader>
+            <FileUploadComponent
+              selectedFiles={selectedFiles}
+              onFilesSelected={onFilesSelected}
+              onFileRemoved={onFileRemoved}
+            />
+          </DialogContent>
+        </Dialog>
       </div>
     </div>
   );

@@ -3,10 +3,13 @@
 import { useChat } from "@/app/dashboard/hooks/useChat";
 import { DashboardSidebar } from "@/app/dashboard/components/DashboardSidebar";
 import { ChatArea, ChatHeader, ChatInput } from "@/app/dashboard/components/chat";
-import { use, useEffect } from "react";
+import { SourcePanel } from "@/app/dashboard/components/chat/components/SourcePanel";
+import { useEffect, useState } from "react";
+import AnalyticsPanel from "@/app/dashboard/components/AnalyticsPanel";
 import { useRouter } from "next/navigation";
 
 export default function Dashboard() {
+    const [showAnalytics, setShowAnalytics] = useState(false);
   const router = useRouter();
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -30,10 +33,15 @@ export default function Dashboard() {
     isTyping,
     selectedFiles,
     inputMessage,
+    selectedSources,
+    isSourcePanelOpen,
     setInputMessage,
     sendMessage,
     addFiles,
     removeFile,
+    resetChat,
+    openSourcePanel,
+    closeSourcePanel,
   } = useChat();
 
   const handleSendMessage = (content: string, attachments?: typeof selectedFiles) => {
@@ -42,33 +50,63 @@ export default function Dashboard() {
 
   return (
     <div className="flex h-screen bg-gradient-to-br from-background via-muted/20 to-accent/5 overflow-hidden">
-      {/* Sidebar Navigation */}
-      <DashboardSidebar />
+      {/* Column 1: Sidebar Navigation - Fixed width */}
+      {!showAnalytics && (
+        <DashboardSidebar
+          onNewConversation={resetChat}
+          onAnalyticsClick={() => setShowAnalytics(true)}
+        />
+      )}
 
-      {/* Main Chat Interface */}
-      <div className="flex-1 flex flex-col backdrop-blur-sm">
-        {/* Chat Header with Upload Options */}
+      {/* Main Content: Either Analytics or Chat UI */}
+      <div className="flex-1 flex flex-col min-w-0">
+        {showAnalytics ? (
+          <AnalyticsPanel onBack={() => setShowAnalytics(false)} />
+        ) : (
+          <>
+            {/* Chat Header */}
+            <ChatHeader
+              selectedFiles={selectedFiles}
+              onFilesSelected={addFiles}
+              onFileRemoved={removeFile}
+            />
 
+            {/* Messages Area */}
+            <div className="flex-1 overflow-y-auto">
+              <ChatArea
+                messages={messages}
+                isTyping={isTyping}
+                onSuggestionSelect={(question) => {
+                  setInputMessage(question);
+                  sendMessage(question);
+                }}
+                onOpenSources={openSourcePanel}
+              />
+            </div>
 
-        {/* Messages Area */}
-        <div className="flex-1 overflow-y-auto">
-          <ChatArea
-            messages={messages}
-            isTyping={isTyping}
+            {/* Input Area */}
+            <ChatInput
+              inputMessage={inputMessage}
+              setInputMessage={setInputMessage}
+              selectedFiles={selectedFiles}
+              onSendMessage={handleSendMessage}
+              onFilesSelected={addFiles}
+              onFileRemoved={removeFile}
+              disabled={isTyping}
+            />
+          </>
+        )}
+      </div>
+
+      {/* Column 3: Source Panel - Conditional, fixed width 350px, hidden on mobile */}
+      {!showAnalytics && isSourcePanelOpen && selectedSources && (
+        <div className="hidden lg:block">
+          <SourcePanel
+            references={selectedSources}
+            onClose={closeSourcePanel}
           />
         </div>
-
-        {/* Input Area */}
-        <ChatInput
-          inputMessage={inputMessage}
-          setInputMessage={setInputMessage}
-          selectedFiles={selectedFiles}
-          onSendMessage={handleSendMessage}
-          onFilesSelected={addFiles}
-          onFileRemoved={removeFile}
-          disabled={isTyping}
-        />
-      </div>
+      )}
     </div>
   );
 }

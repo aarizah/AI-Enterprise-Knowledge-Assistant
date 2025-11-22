@@ -8,32 +8,39 @@ import type { SourceReference } from "@/app/dashboard/types";
 
 interface SourceReferencesProps {
   references: SourceReference[];
+  onOpenSources?: (sources: SourceReference[]) => void;
 }
 
-export function SourceReferences({ references }: SourceReferencesProps) {
+export function SourceReferences({ references, onOpenSources }: SourceReferencesProps) {
   if (!references || references.length === 0) {
     return null;
   }
 
-  return (
-    <Popover>
-      <PopoverTrigger asChild>
-        <button className="
-  inline-flex items-center gap-2 px-4 py-2
-  rounded-xl
-  bg-primary/50
-  text-accent-foreground
-  hover:bg-primary/80
-  border border-primary/40
-  text-xs font-semibold
-  transition-all duration-200
-  shadow-sm hover:shadow-md hover:-translate-y-0.5
-">
+  const handleClick = () => {
+    if (onOpenSources) {
+      onOpenSources(references);
+    }
+  };
 
-          <BookOpen className="w-3.5 h-3.5 group-hover:scale-110 transition-transform" />
-          <span>Sources ({references.length})</span>
-        </button>
-      </PopoverTrigger>
+  return (
+    <>
+      {/* Desktop: Open side panel (lg and up) */}
+      <button
+        onClick={handleClick}
+        className="hidden w-31 lg:inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-primary/50 text-accent-foreground hover:bg-primary/80 border border-primary/40 text-xs font-semibold transition-all duration-200 shadow-sm hover:shadow-md hover:-translate-y-0.5"
+      >
+        <BookOpen className="w-3.5 h-3.5 group-hover:scale-110 transition-transform" />
+        <span>Sources ({references.length})</span>
+      </button>
+
+      {/* Mobile: Popover modal (below lg) */}
+      <Popover>
+        <PopoverTrigger asChild>
+          <button className="lg:hidden inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-primary/50 text-accent-foreground hover:bg-primary/80 border border-primary/40 text-xs font-semibold transition-all duration-200 shadow-sm hover:shadow-md hover:-translate-y-0.5">
+            <BookOpen className="w-3.5 h-3.5 group-hover:scale-110 transition-transform" />
+            <span>Sources ({references.length})</span>
+          </button>
+        </PopoverTrigger>
       
       <PopoverContent 
         side="right" 
@@ -128,5 +135,6 @@ export function SourceReferences({ references }: SourceReferencesProps) {
         </div>
       </PopoverContent>
     </Popover>
+    </>
   );
 }

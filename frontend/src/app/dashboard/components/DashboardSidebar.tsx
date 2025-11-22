@@ -4,80 +4,125 @@ import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
+import { Card } from "@/components/ui/card";
 import { 
   Plus,
   MessageSquare,
   Settings,
   HelpCircle,
-  Zap
+  Zap,
+  Clock,
+  Target,
+  Flame,
+  Database,
+  BarChart3
 } from "lucide-react";
 
 interface DashboardSidebarProps {
   className?: string;
+  onNewConversation?: () => void;
+  onAnalyticsClick?: () => void;
 }
 
-export function DashboardSidebar({ className }: DashboardSidebarProps) {
+export function DashboardSidebar({ className, onNewConversation, onAnalyticsClick }: DashboardSidebarProps) {
   return (
-    <div className={`w-72 bg-sidebar/95 backdrop-blur-xl border-r border-sidebar-border/50 flex flex-col shadow-2xl shadow-black/5 ${className}`}>
-      {/* Header */}
-      <div className="p-6 pb-8">
-        <div className="flex items-center gap-3 mb-3">
-          <div className="w-10 h-10 bg-gradient-to-br from-primary to-accent rounded-2xl flex items-center justify-center shadow-lg shadow-primary/25 ring-2 ring-primary/10">
-            <Zap className="w-5 h-5 text-primary-foreground" />
+    <div className={`w-75 bg-sidebar/95 border-r border-sidebar-border/50 flex flex-col  ${className}`}>
+      {/* Section 1: Header with Logo and Tagline */}
+      <div className="p-5">
+        <div className="flex items-center gap-2.5">
+          <div className="w-9 h-9 bg-gradient-to-br from-primary to-accent rounded-xl flex items-center justify-center shadow-lg shadow-primary/25 ring-2 ring-primary/10">
+            <Zap className="w-4 h-4 text-primary-foreground" />
           </div>
           <div>
-            <h1 className="text-2xl font-bold text-sidebar-foreground tracking-tight">EKA</h1>
-            <p className="text-xs text-muted-foreground font-medium">Enterprise Knowledge</p>
+            <h1 className="text-xl font-bold text-sidebar-foreground tracking-tight">EKA</h1>
+            <p className="text-[11px] text-muted-foreground font-medium">Your AI-powered assistant</p>
           </div>
         </div>
       </div>
+
+      <Separator className="mx-6 bg-sidebar-border/50" />
       
-      {/* New Chat Button */}
-      <div className="px-4 pb-4">
-        <Button className="w-full h-11 bg-gradient-to-r from-primary to-accent hover:shadow-lg hover:shadow-primary/25 hover:-translate-y-0.5 transition-all duration-200 font-semibold" size="default">
-          <Plus className="w-4 h-4 mr-2" />
-          New Chat
+      {/* Section 2: New Conversation Button */}
+      <div className="px-5 pb-3">
+        <Button onClick={onNewConversation} className="w-full h-9 bg-gradient-to-br from-primary/60 to-accent/60 hover:shadow-lg hover:shadow-primary/25 transition-all duration-200 font-medium text-xs" size="sm">
+          <Plus className="w-3.5 h-3.5 mr-1.5" />
+          New Conversation
         </Button>
       </div>
 
-      {/* Chat History */}
-      <ScrollArea className="flex-1 px-4">
-        <div className="space-y-1.5">
-          <div className="flex items-center gap-3 p-3 rounded-xl bg-gradient-to-r from-sidebar-accent to-sidebar-accent/50 border border-accent/20 cursor-pointer hover:shadow-md hover:scale-[1.02] transition-all duration-200 group">
-            <div className="w-8 h-8 rounded-lg bg-accent/10 flex items-center justify-center group-hover:bg-accent/20 transition-colors">
-              <MessageSquare className="w-4 h-4 text-accent" />
-            </div>
-            <span className="text-sm font-medium text-sidebar-foreground truncate">Current Conversation</span>
-          </div>
-        </div>
-      </ScrollArea>
+      <Separator className="mx-6 bg-sidebar-border/50" />
 
-      {/* Bottom Section */}
-      <div className="p-4 mt-auto border-t border-sidebar-border/50 bg-gradient-to-b from-transparent to-sidebar/50 backdrop-blur-sm space-y-1">
-        <Button variant="ghost" className="w-full justify-start hover:bg-sidebar-accent/50 rounded-xl h-10">
-          <Settings className="w-4 h-4 mr-3" />
-          <span className="text-sm font-medium">Settings</span>
+      {/* Section 3: Primary Navigation */}
+      <div className="px-5 py-3 space-y-1">
+        <Button variant="ghost" className="w-full h-9 justify-start hover: rounded-lg font-semibold text-s text-foreground border  hover:border-accent/70 transition-all">
+          <Database className="w-4 h-5 mr-2.5" />
+          Knowledge Base
         </Button>
-        <Button variant="ghost" className="w-full justify-start hover:bg-sidebar-accent/50 rounded-xl h-10">
-          <HelpCircle className="w-4 h-4 mr-3" />
-          <span className="text-sm font-medium">Help & Support</span>
+        <Button
+          variant="ghost"
+          className="w-full h-9 justify-start hover: rounded-lg font-semibold text-s text-foreground border  hover:border-accent/70 transition-all"
+          onClick={onAnalyticsClick}
+        >
+          <BarChart3 className="w-4 h-4 mr-2.5" />
+          Analytics
         </Button>
+      </div>
+
+      <Separator className="mx-5 bg-sidebar-border/50" />
+
+      {/* Section 4: Your Impact This Week */}
+      <div className="px-5 py-4">
+        <div className="flex items-center justify-between mb-2">
+          <p className="text-[10px] text-muted-foreground tracking-wide">Your Impact This Week</p>
+          <Button variant="ghost" size="sm" className="h-5 px-1.5 text-[10px] font-semibold hover:text-foreground">
+            Details
+          </Button>
+        </div>
         
-        <Separator className="my-3 bg-sidebar-border/50" />
-        
-        {/* User Info */}
-        <div className="flex items-center gap-3 p-2 rounded-xl hover:bg-sidebar-accent/30 transition-colors cursor-pointer">
-          <Avatar className="w-9 h-9 ring-2 ring-accent/20">
-            <AvatarFallback className="bg-gradient-to-br from-primary to-accent text-primary-foreground font-semibold">U</AvatarFallback>
-          </Avatar>
-          <div className="flex-1 min-w-0">
-            <p className="text-sm font-semibold text-sidebar-foreground truncate">User</p>
-            <p className="text-xs text-muted-foreground flex items-center gap-1">
-              <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></span>
-              Online
-            </p>
+        <div className="space-y-1.5">
+          {/* Time Saved Card */}
+          <Card className="p-3 bg-gradient-to-br from-emerald-50 to-teal-50 border-emerald-200/50">
+            <div className="flex items-start justify-between mb-1.5">
+              <span className="text-[11px] font-medium text-emerald-700">Time Saved</span>
+              <Clock className="w-3.5 h-3.5 text-emerald-600" />
+            </div>
+            <div className="space-y-0.5">
+              <p className="text-xl font-bold text-emerald-900">142 min</p>
+              <p className="text-[10px] text-emerald-700">≈ 2.4 hours this week</p>
+            </div>
+          </Card>
+
+          {/* Stats Grid */}
+          <div className="grid grid-cols-2 gap-1.5">
+            {/* Queries Card */}
+            <Card className="p-2.5 bg-gradient-to-br from-violet-50 to-purple-50 border-violet-200/50">
+              <div className="flex items-center gap-1.5 mb-1.5">
+                <Target className="w-3.5 h-3.5 text-violet-600" />
+                <span className="text-[10px] font-medium text-violet-700">Queries</span>
+              </div>
+              <p className="text-xl font-bold text-violet-900">23</p>
+            </Card>
+
+            {/* Streak Card */}
+            <Card className="p-2.5 bg-gradient-to-br from-amber-50 to-orange-50 border-amber-200/50">
+              <div className="flex items-center gap-1.5 mb-1.5">
+                <Flame className="w-3.5 h-3.5 text-orange-600" />
+                <span className="text-[10px] font-medium text-orange-700">Streak</span>
+              </div>
+              <p className="text-xl font-bold text-orange-900">5 days</p>
+            </Card>
           </div>
         </div>
+      </div>
+
+      <Separator className="mx-5 bg-sidebar-border/50" />
+
+      {/* Section 5: Bottom Navigation */}
+      <div className="p-5 mt-auto">
+        <Button variant="ghost" className="w-full justify-start hover:bg-sidebar-accent/50 rounded-lg h-8 font-medium text-muted-foreground">
+          <Settings className="w-3.5 h-3.5 mr-2.5" />
+          <span className="text-xs">Settings</span>
+        </Button>
       </div>
     </div>
   );

@@ -4,12 +4,20 @@ import { settings } from "@/lib/settings";
 
 export class ChatService {
   private static _lastSources: any = null;
+  private static _lastConfidence: number | undefined = undefined;
 
   // Get and clear last sources
   static getLastSources() {
     const sources = this._lastSources;
     this._lastSources = null;
     return sources;
+  }
+
+  // Get and clear last confidence
+  static getLastConfidence() {
+    const confidence = this._lastConfidence;
+    this._lastConfidence = undefined;
+    return confidence;
   }
 
   // Generate AI response (now sends to real backend)
@@ -39,6 +47,14 @@ export class ChatService {
       
       // Store sources temporarily to attach to message later
       this._lastSources = data.answer.sources || null;
+      
+      // Store confidence if available (expect a value between 0-1 from backend)
+      if (data.answer.confidence !== undefined) {
+        this._lastConfidence = Math.round(data.answer.confidence * 100);
+      } else {
+        // Default to a high confidence if not provided by backend
+        this._lastConfidence = 96;
+      }
       
       return data.answer.answer || "Could not process the query.";
     } catch (error) {
@@ -163,6 +179,14 @@ export class ChatService {
       
       // Store sources temporarily to attach to message later
       this._lastSources = data.answer.sources || null;
+      
+      // Store confidence if available (expect a value between 0-1 from backend)
+      if (data.answer.confidence !== undefined) {
+        this._lastConfidence = Math.round(data.answer.confidence * 100);
+      } else {
+        // Default to a high confidence if not provided by backend
+        this._lastConfidence = 96;
+      }
       
       return data.answer.answer || "Could not process the query.";
     } catch (error) {

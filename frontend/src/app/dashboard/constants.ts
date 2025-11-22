@@ -18,3 +18,11 @@ export const MESSAGES = {
   FILE_UPLOAD_PLACEHOLDER: "Ask any question or describe your situation...",
   KEYBOARD_SHORTCUTS: "Press Enter to send, Shift + Enter for a new line",
 } as const;
+
+export const SUGGESTED_QUESTIONS = [
+  "Which documents were recently updated?",
+  "Summarize the sales report from the last quarter.",
+  "What are the main risks of project X?",
+  "Compare security policies 2024 vs 2025.",
+  "Give me the summary of the docs.",
+] as const;
