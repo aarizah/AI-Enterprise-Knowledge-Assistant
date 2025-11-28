@@ -1,37 +1,43 @@
 "use client";
 
 import { useState, useCallback, useRef, useEffect } from 'react';
-import { Message, FileAttachment, SourceReference } from "@/app/dashboard/types";
+import { Message, SourceReference } from "@/app/dashboard/types";
 import { ChatService } from '@/app/dashboard/chatService';
 import { MESSAGES } from '@/app/dashboard/constants';
 
 export function useChat() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [isTyping, setIsTyping] = useState(false);
-  const [selectedFiles, setSelectedFiles] = useState<FileAttachment[]>([]);
   const [inputMessage, setInputMessage] = useState("");
   const [selectedSources, setSelectedSources] = useState<SourceReference[] | null>(null);
   const [isSourcePanelOpen, setIsSourcePanelOpen] = useState(false);
 
   const addMessage = useCallback((message: Message) => {
-    setMessages(prev => [...prev, message]);
+    setMessages(prev => {
+      const newMessages = [...prev, message];
+      
+      // Guardar en localStorage y disparar evento
+      localStorage.setItem("chat_history", JSON.stringify(newMessages));
+      window.dispatchEvent(new Event("chat_updated"));
+      
+      return newMessages;
+    });
   }, []);
 
-  const sendMessage = useCallback(async (content: string, attachments?: FileAttachment[]) => {
-    if (!content.trim() && (!attachments || attachments.length === 0)) return;
+  const sendMessage = useCallback(async (content: string) => {
+    if (!content.trim()) return;
 
     // Add user message
-    const userMessage = ChatService.createMessage(content, "user", attachments);
+    const userMessage = ChatService.createMessage(content, "user");
     addMessage(userMessage);
 
-    // Clear input and files
+    // Clear input
     setInputMessage("");
-    setSelectedFiles([]);
     setIsTyping(true);
 
     try {
       // Generate AI response
-      const aiResponse = await ChatService.generateResponse(content, attachments);
+      const aiResponse = await ChatService.generateResponse(content);
       const assistantMessage = ChatService.createMessage(aiResponse, "assistant");
       
       // Attach sources if available
@@ -49,8 +55,9 @@ export function useChat() {
       addMessage(assistantMessage);
     } catch (error) {
       console.error('Error generating response:', error);
+      const errorText = error instanceof Error ? error.message : "Unknown error occurred";
       const errorMessage = ChatService.createMessage(
-        "Sorry, there was an error processing your message. Please try again.",
+        `Sorry, there was an error: ${errorText}`,
         "assistant"
       );
       addMessage(errorMessage);
@@ -59,24 +66,15 @@ export function useChat() {
     }
   }, [addMessage]);
 
-  const addFiles = useCallback((newFiles: FileAttachment[]) => {
-    setSelectedFiles(prev => [...prev, ...newFiles]);
-  }, []);
-
-  const removeFile = useCallback((fileId: string) => {
-    setSelectedFiles(prev => prev.filter(file => file.id !== fileId));
-  }, []);
-
-  const clearFiles = useCallback(() => {
-    setSelectedFiles([]);
-  }, []);
-
   const resetChat = useCallback(() => {
     setMessages([]);
     setInputMessage("");
-    setSelectedFiles([]);
     setSelectedSources(null);
     setIsSourcePanelOpen(false);
+    
+    // Limpiar localStorage y disparar evento para actualizar sidebar
+    localStorage.removeItem("chat_history");
+    window.dispatchEvent(new Event("chat_updated"));
   }, []);
 
   const openSourcePanel = useCallback((sources: SourceReference[]) => {
@@ -91,15 +89,11 @@ export function useChat() {
   return {
     messages,
     isTyping,
-    selectedFiles,
     inputMessage,
     selectedSources,
     isSourcePanelOpen,
     setInputMessage,
     sendMessage,
-    addFiles,
-    removeFile,
-    clearFiles,
     resetChat,
     openSourcePanel,
     closeSourcePanel,

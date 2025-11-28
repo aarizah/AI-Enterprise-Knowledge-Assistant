@@ -23,10 +23,11 @@ export function SourcePanel({ references, onClose }: SourcePanelProps) {
   const selectedSource = references[selectedIndex];
 
   const getConfidenceColor = (confidence?: number) => {
-    if (!confidence) return "bg-gray-500";
-    if (confidence >= 90) return "bg-emerald-500";
-    if (confidence >= 80) return "bg-green-500";
-    return "bg-yellow-500";
+    if (!confidence) return "bg-slate-400";
+    if (confidence >= 90) return "bg-emerald-500/90";     // Verde profundo pero suave
+    if (confidence >= 70) return "bg-teal-500/80";        // Verde azulado suave
+    if (confidence >= 50) return "bg-amber-500/80";       // Ámbar en vez de amarillo puro
+    return "bg-rose-500/80";                              // Rosa en vez de rojo puro
   };
 
   return (
@@ -53,7 +54,7 @@ export function SourcePanel({ references, onClose }: SourcePanelProps) {
       </div>
 
       {/* Tab Navigation */}
-      <div className="border-b bg-background px-3 py-2 flex gap-2 overflow-x-auto shrink-0">
+      <div className="border-b bg-background px-3 py-2 flex flex-wrap gap-2 shrink-0">
         {references.map((ref, index) => (
           <button
             key={index}
@@ -70,9 +71,6 @@ export function SourcePanel({ references, onClose }: SourcePanelProps) {
                 {ref.confidence}%
               </Badge>
             )}
-              <Badge className="bg-green-500 text-white text-[10px] px-1.5 py-0">
-                {97}% 
-              </Badge>
           </button>
         ))}
       </div>
@@ -118,12 +116,15 @@ export function SourcePanel({ references, onClose }: SourcePanelProps) {
             </div>
 
             {/* Excerpt Section */}
-            <div>
+            <div className="max-w-full">
               <h5 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2">
                 Excerpt
               </h5>
-              <div className="bg-muted/30 border border-border rounded-lg p-4">
-                <p className="text-sm text-foreground leading-relaxed">
+              <div className="bg-muted/30 border border-border rounded-lg p-4 max-w-full overflow-hidden">
+                <p
+                  className="text-sm text-foreground leading-relaxed whitespace-pre-wrap break-words w-full max-w-full"
+                  style={{ wordBreak: "break-word", overflowWrap: "anywhere" }}
+                >
                   {selectedSource.page_content}
                 </p>
               </div>

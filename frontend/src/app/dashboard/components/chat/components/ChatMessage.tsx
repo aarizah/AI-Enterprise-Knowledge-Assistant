@@ -5,7 +5,7 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { FileText, User, Bot, Copy, ThumbsUp, ThumbsDown, CheckCircle2 } from "lucide-react";
-import { Message, FileAttachment, SourceReference } from "@/app/dashboard/types";
+import { Message, SourceReference } from "@/app/dashboard/types";
 import { ChatService } from "@/app/dashboard/chatService";
 import { SourceReferences } from "./SourceReference";
 
@@ -25,20 +25,40 @@ export function ChatMessage({ message, onOpenSources }: ChatMessageProps) {
     return `${hours}:${minutes}`;
   };
 
+  // Check if the message is a "no information" response
+  const isNoInfoResponse = message.content.toLowerCase().includes("i don't have that information");
+
+  // Get the best source confidence (highest relevance_score)
+  const getBestSourceConfidence = (): number | undefined => {
+    if (isNoInfoResponse) return undefined; // No confidence for "no info" responses
+    if (!message.sources || message.sources.length === 0) return message.confidence;
+    
+    const sourceConfidences = message.sources
+      .map(src => src.confidence)
+      .filter((conf): conf is number => conf !== undefined);
+    
+    if (sourceConfidences.length === 0) return message.confidence;
+    
+    return Math.max(...sourceConfidences);
+  };
+
+  const displayConfidence = getBestSourceConfidence();
+  const shouldShowSources = !isNoInfoResponse && message.sources && message.sources.length > 0;
+
   // Get confidence border color based on percentage
   const getConfidenceBorderColor = (confidence: number) => {
-    if (confidence >= 90) return "border-t-emerald-500";
-    if (confidence >= 75) return "border-t-blue-500";
-    if (confidence >= 60) return "border-t-yellow-500";
-    return "border-t-orange-500";
+    if (confidence >= 90) return "border-t-emerald-500/70";   // Verde suave
+    if (confidence >= 70) return "border-t-teal-500/60";      // Verde azulado
+    if (confidence >= 50) return "border-t-amber-500/60";     // Ámbar suave
+    return "border-t-rose-500/60";                            // Rosa suave
   };
 
   // Get confidence badge background color
   const getConfidenceBadgeColor = (confidence: number) => {
-    if (confidence >= 90) return "bg-emerald-500/90 hover:bg-emerald-500";
-    if (confidence >= 75) return "bg-blue-500/90 hover:bg-blue-500";
-    if (confidence >= 60) return "bg-yellow-500/90 hover:bg-yellow-500";
-    return "bg-orange-500/90 hover:bg-orange-500";
+    if (confidence >= 90) return "bg-emerald-500/85 hover:bg-emerald-500/95";  // Verde suave
+    if (confidence >= 70) return "bg-teal-500/80 hover:bg-teal-500/90";       // Verde azulado
+    if (confidence >= 50) return "bg-amber-500/80 hover:bg-amber-500/90";     // Ámbar suave
+    return "bg-rose-500/80 hover:bg-rose-500/90";                             // Rosa suave
   };
 
   return (
@@ -46,22 +66,6 @@ export function ChatMessage({ message, onOpenSources }: ChatMessageProps) {
       isUser ? "items-end" : "items-start"
     }`}>
       <div className={`flex flex-col space-y-3 ${isUser ? "max-w-[75%]" : "max-w-[80%]"}`}>
-        
-        {/* Attachments */}
-        {message.attachments && message.attachments.length > 0 && (
-          <div className="space-y-1.5 w-full">
-            {message.attachments.map((file) => (
-              <div key={file.id} className="flex items-center gap-2 p-2.5 bg-muted/50 rounded-lg border border-border/50 hover:bg-muted hover:shadow-sm transition-all">
-                <FileText className="w-3.5 h-3.5 text-accent" />
-                <span className="text-xs font-medium text-card-foreground flex-1 truncate">{file.name}</span>
-                <Badge variant="secondary" className="text-[10px] px-1.5 py-0">
-                  {formatFileSize(file.size)}
-                </Badge>
-              </div>
-            ))}
-          </div>
-        )}
-        
         {/* Message bubble */}
         {isUser ? (
           <Card className="px-5 py-2 shadow-md hover:shadow-lg transition-all duration-200 bg-gradient-to-br from-primary/20 to-accent/20 text-primary-foreground rounded-3xl rounded-tr-md border-0">
@@ -71,7 +75,11 @@ export function ChatMessage({ message, onOpenSources }: ChatMessageProps) {
           </Card>
         ) : (
           <Card className={`shadow-md hover:shadow-lg transition-all duration-200 bg-white rounded-lg overflow-hidden border-t-4 ${
-            message.confidence !== undefined ? getConfidenceBorderColor(message.confidence) : "border-t-gray-300"
+            isNoInfoResponse 
+              ? "border-t-slate-400" 
+              : displayConfidence !== undefined 
+                ? getConfidenceBorderColor(displayConfidence) 
+                : "border-t-gray-300"
           }`}>
             {/* Header with icon, name and confidence badge */}
             <div className="flex items-center gap-3 px-4 pb-3">
@@ -81,12 +89,12 @@ export function ChatMessage({ message, onOpenSources }: ChatMessageProps) {
               <span className="font-semibold text-sm text-foreground">
                 EKA Response
               </span>
-              {message.confidence !== undefined && (
+              {displayConfidence !== undefined && (
                 <Badge
-                  className={`${getConfidenceBadgeColor(message.confidence)} text-white px-2 py-1 font-semibold shadow-sm transition-colors flex items-center gap-1 `}
+                  className={`${getConfidenceBadgeColor(displayConfidence)} text-white px-2 py-1 font-semibold shadow-sm transition-colors flex items-center gap-1 `}
                 >
                   <CheckCircle2 className="w-3 h-3" />
-                  {message.confidence}% Confidence
+                  {displayConfidence}% Confidence
                 </Badge>
               )}
             </div>
@@ -101,10 +109,10 @@ export function ChatMessage({ message, onOpenSources }: ChatMessageProps) {
           </Card>
         )}
 
-        {/* Source References - only for assistant messages */}
-        {!isUser && message.sources && (
+        {/* Source References - only for assistant messages with valid sources */}
+        {!isUser && shouldShowSources && (
           <SourceReferences
-            references={message.sources}
+            references={message.sources!}
             onOpenSources={onOpenSources}
           />
         )}

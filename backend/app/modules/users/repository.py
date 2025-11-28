@@ -1,5 +1,8 @@
 from sqlalchemy.orm import Session
+from fastapi import Depends
 from app.modules.users.models import User
+from app.core.database import get_db
+
 
 class UserRepository:
     def __init__(self, db: Session):
@@ -14,3 +17,7 @@ class UserRepository:
 
     def get_by_email(self, email: str):
         return self.db.query(User).filter(User.email == email).first()
+
+
+def get_user_repo(db: Session = Depends(get_db)) -> UserRepository:
+    return UserRepository(db)

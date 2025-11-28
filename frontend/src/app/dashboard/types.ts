@@ -1,15 +1,8 @@
-export interface FileAttachment {
-  id: string;
-  name: string;
-  size: number;
-  type: string;
-  file: File; // File object to access content
-}
-
 export interface SourceReference {
   id: null;
   page_content: string;
-  confidence?: number; // Confidence score 0-100 for this specific source
+  confidence?: number; // Relevance score 0-100 for this specific source (from backend relevance_score)
+  cosine_distance?: number; // Cosine distance from backend (0-1, lower is better)
   metadata?: {
     h1?: string;
     h2?: string;
@@ -26,7 +19,6 @@ export interface Message {
   content: string;
   sender: "user" | "assistant";
   timestamp: Date;
-  attachments?: FileAttachment[];
   sources?: SourceReference[];
   confidence?: number; // Confidence score 0-100 for assistant responses
 }
@@ -34,5 +26,4 @@ export interface Message {
 export interface ChatState {
   messages: Message[];
   isTyping: boolean;
-  selectedFiles: FileAttachment[];
 }

@@ -1,4 +1,4 @@
-import { Message, FileAttachment } from "@/app/dashboard/types";
+import { Message } from "@/app/dashboard/types";
 import { CHAT_CONSTANTS } from '@/app/dashboard/constants';
 import { settings } from "@/lib/settings";
 
@@ -21,17 +21,13 @@ export class ChatService {
   }
 
   // Generate AI response (now sends to real backend)
-  static async generateResponse(message: string, attachments?: FileAttachment[]): Promise<string> {
+  static async generateResponse(message: string): Promise<string> {
     try {
-      // If there are attachments, use the full function
-      if (attachments && attachments.length > 0) {
-        return await this.sendMessageWithFiles(message, attachments);
-      }
-
-      // If there are no files, just send the message
-      const response = await fetch(`${settings.backendUrl}/ai/rag_from_query`, {
+      const token = localStorage.getItem("token");
+      const response = await fetch(`${settings.backendUrl}/chat/answer`, {
         method: 'POST',
         headers: {
+          Authorization: `Bearer ${token}`,
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
@@ -40,49 +36,76 @@ export class ChatService {
       });
 
       if (!response.ok) {
-        throw new Error(`Error: ${response.statusText}`);
+        // Intentar obtener el mensaje de error del backend
+        const errorData = await response.json().catch(() => null);
+        const errorMessage = errorData?.detail || errorData?.message || response.statusText;
+        throw new Error(errorMessage);
       }
 
       const data = await response.json();
       
-      // Store sources temporarily to attach to message later
-      this._lastSources = data.answer.sources || null;
+      // Store sources temporarily to attach to message later (map to UI shape)
+      this._lastSources = (data.sources || []).map((src: any) => ({
+        id: src.document_id ?? null,
+        page_content: src.text ?? "",
+        confidence: src.relevance_score ?? undefined, // Use relevance_score from backend
+        cosine_distance: src.cosine_distance ?? undefined,
+        metadata: src.metadata ?? {},
+      })) || null;
       
       // Store confidence if available (expect a value between 0-1 from backend)
-      if (data.answer.confidence !== undefined) {
-        this._lastConfidence = Math.round(data.answer.confidence * 100);
+      if (data.confidence !== undefined) {
+        this._lastConfidence = Math.round(data.confidence * 100);
       } else {
         // Default to a high confidence if not provided by backend
         this._lastConfidence = 96;
       }
       
-      return data.answer.answer || "Could not process the query.";
+      return data.answer || "Could not process the query.";
     } catch (error) {
       console.error('Error generating response:', error);
-      // Fallback to simulated response in case of error
-      await new Promise(resolve => setTimeout(resolve, CHAT_CONSTANTS.TYPING_SIMULATION_DELAY));
-      const hasAttachments = attachments && attachments.length > 0;
-      const baseResponse = "Sorry, there was an error connecting to the server. ";
-      const attachmentPart = hasAttachments ? "Attachments could not be processed. " : "";
-      const conclusionPart = "Please try again later.";
-      
-      return baseResponse + attachmentPart + conclusionPart;
+      // Devolver el error real del backend
+      const errorMessage = error instanceof Error ? error.message : "Unknown error occurred";
+      return `Sorry, there was an error: ${errorMessage}`;
     }
   }
 
   // Create a new message
   static createMessage(
     content: string,
-    sender: "user" | "assistant",
-    attachments?: FileAttachment[]
+    sender: "user" | "assistant"
   ): Message {
     return {
       id: Date.now().toString() + Math.random(),
       content,
       sender,
       timestamp: new Date(),
-      attachments: attachments?.length ? [...attachments] : undefined,
     };
+  }
+
+  // Upload documents to backend `/documents` endpoint
+  static async uploadDocuments(files: File[], fileNames?: string[]): Promise<{ ok: boolean; message?: string }>{
+    const token = localStorage.getItem("token");
+    const formData = new FormData();
+    files.forEach((file) => formData.append("files", file));
+    if (fileNames && fileNames.length) {
+      fileNames.forEach((name) => formData.append("fileNames", name));
+    }
+
+    const response = await fetch(`${settings.backendUrl}/documents`, {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      body: formData,
+    });
+
+    if (!response.ok) {
+      const text = await response.text().catch(() => '');
+      return { ok: false, message: text || response.statusText };
+    }
+    const data = await response.json().catch(() => ({ message: 'Files uploaded and ingested successfully.' }));
+    return { ok: true, message: (data && (data.message || data.detail)) || 'Files uploaded and ingested successfully.' };
   }
 
   // Validate file upload
@@ -114,84 +137,4 @@ export class ChatService {
     return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i];
   }
 
-  // Convert File objects to FileAttachment objects
-  static createFileAttachment(file: File): FileAttachment {
-    return {
-      id: Date.now().toString() + Math.random(),
-      name: file.name,
-      size: file.size,
-      type: file.type,
-      file: file, // Include the full File object
-    };
-  }
-
-  // Send files to backend
-  static async uploadFiles(files: FileAttachment[]): Promise<any> {
-    const formData = new FormData();
-    
-    // Append each file to FormData
-    files.forEach((fileAttachment, index) => {
-      formData.append(`files`, fileAttachment.file);
-      formData.append(`fileNames`, fileAttachment.name);
-    });
-
-    try {
-      const response = await fetch(`${settings.backendUrl}/ai/upload_documents`, {
-        method: 'POST',
-        body: formData,
-      });
-
-      if (!response.ok) {
-        throw new Error(`Error uploading files: ${response.statusText}`);
-      }
-
-      return await response.json();
-    } catch (error) {
-      console.error('Error uploading files:', error);
-      throw error;
-    }
-  }
-
-  // Send message with files to backend
-  static async sendMessageWithFiles(message: string, attachments?: FileAttachment[]): Promise<string> {
-    try {
-      // First upload files if any
-      if (attachments && attachments.length > 0) {
-        await this.uploadFiles(attachments);
-      }
-
-      // Send message to backend for RAG processing
-      const response = await fetch(`${settings.backendUrl}/ai/rag_from_query`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          query: message,
-        }),
-      });
-
-      if (!response.ok) {
-        throw new Error(`Error: ${response.statusText}`);
-      }
-
-      const data = await response.json();
-      
-      // Store sources temporarily to attach to message later
-      this._lastSources = data.answer.sources || null;
-      
-      // Store confidence if available (expect a value between 0-1 from backend)
-      if (data.answer.confidence !== undefined) {
-        this._lastConfidence = Math.round(data.answer.confidence * 100);
-      } else {
-        // Default to a high confidence if not provided by backend
-        this._lastConfidence = 96;
-      }
-      
-      return data.answer.answer || "Could not process the query.";
-    } catch (error) {
-      console.error('Error sending message with files:', error);
-      throw error;
-    }
-  }
 }
