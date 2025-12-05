@@ -24,4 +24,4 @@ ENV PORT=8000
 EXPOSE ${PORT}
 
 # Comando para correr FastAPI en producción
-CMD ["uv", "run", "uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "${PORT}"]
+CMD uv run uvicorn app.main:app --host 0.0.0.0 --port $PORT
