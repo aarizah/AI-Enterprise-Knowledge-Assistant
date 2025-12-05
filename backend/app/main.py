@@ -13,7 +13,7 @@ app = FastAPI()
 # Dev CORS: Allow frontend origin with credentials
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000"],
+    allow_origins=["http://localhost:3000", "https://eka-ten.vercel.app"],
     allow_credentials=True,
     allow_methods=["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
     allow_headers=["*"],
