@@ -7,6 +7,9 @@ class Settings(BaseSettings):
     access_token_expire_minutes: int
     VOYAGE_API_KEY: str
     OPENAI_API_KEY: str
+    SUPABASE_URL: str
+    SUPABASE_KEY: str
+    SUPABASE_BUCKET: str
 
     class Config:
         env_file = ".env"

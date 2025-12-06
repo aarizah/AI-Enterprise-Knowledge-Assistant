@@ -8,7 +8,7 @@ from app.modules.documents.services import DocumentService
 from app.modules.documents.repository import DocumentRepository
 from app.modules.documents.schemas import DocumentListResponse, DocumentResponse
 from app.modules.documents.indexing_pipeline.pipeline import IngestionPipeline
-from app.modules.documents.s3_utils import file_utils
+from app.modules.documents.storage_utils import storage
 from app.modules.users.schemas import UserContext
 
 
@@ -17,7 +17,7 @@ router = APIRouter(prefix="/documents", tags=["Documents"])
 
 def get_document_service(db: Annotated[Session, Depends(get_db)]) -> DocumentService:
 	repository = DocumentRepository(db)
-	pipeline = IngestionPipeline(db, file_utils)
+	pipeline = IngestionPipeline(db, storage)
 	return DocumentService(repository, pipeline)
 
 

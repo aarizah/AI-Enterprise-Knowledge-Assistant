@@ -1,6 +1,5 @@
 from typing import List, Optional
 from fastapi import UploadFile
-from pathlib import Path
 
 from app.modules.documents.repository import DocumentRepository
 from app.modules.users.schemas import UserContext
@@ -8,7 +7,7 @@ from app.modules.documents.models import Document
 from app.modules.documents.exceptions import DocumentNotFound, ForbiddenDocumentAccess, InvalidAuthenticationContext
 from app.modules.documents.schemas import DocumentResponse, DocumentListResponse
 from app.modules.documents.indexing_pipeline.pipeline import IngestionPipeline
-from app.modules.documents.s3_utils import file_utils
+from app.modules.documents.storage_utils import storage
 
 
 class DocumentService:
@@ -30,8 +29,7 @@ class DocumentService:
         document = self._get_owned_document_or_404(document_id, user.id)
 
         if document.file_path:
-            file_path = Path(document.file_path)
-            file_utils.delete_file(file_path)
+            storage.delete_file(document.file_path)
         
         return self.repository.delete_document(document_id)
     
@@ -54,11 +52,11 @@ class DocumentService:
 
     async def upload_documents(self, files: List[UploadFile], user: UserContext) -> List[Document]:
         self._validate_user(user)
-        file_paths = await file_utils.save_uploaded_files(files)
+        file_paths = await storage.save_uploaded_files(files)
         
         documents = []
         for file_path in file_paths:
-            file_info = file_utils.get_file_info(file_path)
+            file_info = storage.get_file_info(file_path)
             existing_doc = self.repository.get_document_by_filename(file_info["filename"])
             
             if existing_doc:
@@ -82,7 +80,6 @@ class DocumentService:
                 documents.append(document)
         
         return documents
-
     # Security Section
 
     def _validate_user(self, user: UserContext) -> None:
