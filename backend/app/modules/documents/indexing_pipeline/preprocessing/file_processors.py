@@ -8,7 +8,7 @@ from langchain.schema import Document
 from pathlib import Path
 
 
-def process_docx(file_path):
+def process_docx(file_path, original_filename=None):
     """Procesa archivo DOCX y extrae contenido estructurado"""
     try:
         doc = docx.Document(file_path)
@@ -31,10 +31,12 @@ def process_docx(file_path):
                 elements.append(text)
 
         structured_text = "\n\n".join(elements)
+        
+        source_name = original_filename if original_filename else Path(file_path).name
 
         return [Document(
             page_content=structured_text,
-            metadata={"source": Path(file_path).name, "type": "docx"}
+            metadata={"source": source_name, "type": "docx"}
         )]
 
     except Exception as e:
@@ -42,7 +44,7 @@ def process_docx(file_path):
         return []
 
 
-def process_md(file_path):
+def process_md(file_path, original_filename=None):
     """Procesa archivo Markdown"""
     try:
         with open(file_path, "r", encoding="utf-8") as f:
@@ -50,16 +52,18 @@ def process_md(file_path):
         
         text = "\n".join(line.rstrip() for line in text.splitlines())
         
+        source_name = original_filename if original_filename else Path(file_path).name
+        
         return [Document(
             page_content=text.strip(),
-            metadata={"source": Path(file_path).name, "type": "md"})
+            metadata={"source": source_name, "type": "md"})
         ]
     except Exception as e:
         print(f"Error procesando MD {file_path}: {e}")
         return []
 
 
-def process_pdf(file_path):
+def process_pdf(file_path, original_filename=None):
     """Procesa archivo PDF y extrae contenido con estructura de headers"""
     try:
         doc = fitz.open(str(file_path))
@@ -107,10 +111,12 @@ def process_pdf(file_path):
                         elements.append(f"{text} {page_marker}")
 
         structured_text = "\n\n".join(elements)
+        
+        source_name = original_filename if original_filename else Path(file_path).name
 
         return [Document(
             page_content=structured_text,
-            metadata={"source": Path(file_path).name, "type": "pdf"}
+            metadata={"source": source_name, "type": "pdf"}
         )]
 
     except Exception as e:

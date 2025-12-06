@@ -15,17 +15,19 @@ class Preprocessor:
         ".md": process_md
     }
     
-    def process_files(self, file_paths: List[Path]) -> Dict[str, List]:
+    def process_files(self, file_paths: List[Path], filename_mapping: Dict[str, str] = None) -> Dict[str, List]:
         """
         Procesa una lista de archivos y extrae su contenido
         
         Args:
             file_paths: Lista de rutas de archivos
+            filename_mapping: Diccionario opcional que mapea file_path.name -> nombre_original
             
         Returns:
             Dict con filename como key y lista de Documents como value
         """
         results = {}
+        filename_mapping = filename_mapping or {}
         
         for file_path in file_paths:
             if not file_path.exists() or not file_path.is_file():
@@ -34,11 +36,12 @@ class Preprocessor:
             
             filename = file_path.name
             ext = file_path.suffix.lower()
+            original_filename = filename_mapping.get(filename)
             
             if ext in self.SUPPORTED_EXTENSIONS:
                 processor_func = self.SUPPORTED_EXTENSIONS[ext]
                 try:
-                    documents = processor_func(file_path)
+                    documents = processor_func(file_path, original_filename)
                     results[filename] = documents
                 except Exception as e:
                     print(f"Error processing {filename}: {e}")

@@ -51,10 +51,10 @@ class IngestionPipeline:
                 # Marcar como procesando
                 self.repository.update_document_status(document_id, "processing")
                 
-                # 1. Pre-procesar archivo temporal
-                process_results = self.preprocessor.process_files([temp_file_path])
-                # El preprocessor usa el nombre del archivo temporal, así que usamos ese
+                # 1. Pre-procesar archivo temporal con mapeo al nombre original
                 temp_filename = temp_file_path.name
+                filename_mapping = {temp_filename: document.filename}
+                process_results = self.preprocessor.process_files([temp_file_path], filename_mapping)
                 docs = process_results.get(temp_filename, [])
                 
                 if not docs:
