@@ -9,6 +9,7 @@ import AnalyticsPanel from "@/app/dashboard/components/AnalyticsPanel";
 import KnowledgeHubPanel from "@/app/dashboard/components/KnowledgeHub/KnowledgeHubPanel";
 import { useRouter } from "next/navigation";
 import { Toaster } from "sonner";
+import { settings } from "@/lib/settings";
 
 export default function Dashboard() {
   const [showAnalytics, setShowAnalytics] = useState(false);
@@ -17,7 +18,7 @@ export default function Dashboard() {
   const router = useRouter();
   useEffect(() => {
     const token = localStorage.getItem("token");
-    fetch("http://localhost:8000/auth/me", {
+    fetch(`${settings.backendUrl}/auth/me`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
