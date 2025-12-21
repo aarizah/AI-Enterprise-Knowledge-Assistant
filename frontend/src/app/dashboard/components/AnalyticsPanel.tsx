@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { ArrowLeft, CheckCircle2, Zap, DollarSign, Info } from "lucide-react";
+import { settings } from "@/lib/settings";
 
 interface AnalyticsData {
   citation_rate: number;
@@ -28,7 +29,7 @@ function AnalyticsPanel({ onBack }: { onBack: () => void }) {
     const fetchAnalytics = async () => {
       try {
         const token = localStorage.getItem("token");
-        const response = await fetch("http://localhost:8000/analytics/", {
+        const response = await fetch(`${settings.backendUrl}/analytics/`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
