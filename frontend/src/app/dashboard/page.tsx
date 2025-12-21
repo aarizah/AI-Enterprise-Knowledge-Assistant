@@ -10,6 +10,7 @@ import KnowledgeHubPanel from "@/app/dashboard/components/KnowledgeHub/Knowledge
 import { useRouter } from "next/navigation";
 import { Toaster } from "sonner";
 import { settings } from "@/lib/settings";
+import { UserProvider } from "@/contexts/UserContext";
 
 export default function Dashboard() {
   const [showAnalytics, setShowAnalytics] = useState(false);
@@ -53,64 +54,66 @@ export default function Dashboard() {
   return (
     <>
       <Toaster position="top-right" richColors />
-      <div className="flex h-screen bg-gradient-to-br from-background via-muted/20 to-accent/5 overflow-hidden">
-        {/* Column 1: Sidebar Navigation - Fixed width */}
-      {!showAnalytics && !showKnowledgeHub && (
-        <DashboardSidebar
-          onNewConversation={resetChat}
-          onAnalyticsClick={() => setShowAnalytics(true)}
-          onKnowledgeHubClick={() => setShowKnowledgeHub(true)}
-        />
-      )}
-
-      {/* Main Content: Either Analytics or Chat UI */}
-      <div className="flex-1 flex flex-col min-w-0">
-        {showAnalytics ? (
-          <AnalyticsPanel onBack={() => setShowAnalytics(false)} />
-        ) : showKnowledgeHub ? (
-          <KnowledgeHubPanel onBack={() => setShowKnowledgeHub(false)} />
-        ) : (
-          <>
-            {/* Chat Header */}
-            <ChatHeader
-              documentsReady={documentCount}
-              onDocumentCountChange={setDocumentCount}
-            />
-
-            {/* Messages Area */}
-            <div className="flex-1 overflow-y-auto">
-              <ChatArea
-                messages={messages}
-                isTyping={isTyping}
-                onSuggestionSelect={(question) => {
-                  setInputMessage(question);
-                  sendMessage(question);
-                }}
-                onOpenSources={openSourcePanel}
-              />
-            </div>
-
-            {/* Input Area */}
-            <ChatInput
-              inputMessage={inputMessage}
-              setInputMessage={setInputMessage}
-              onSendMessage={handleSendMessage}
-              disabled={isTyping}
-            />
-          </>
-        )}
-      </div>
-
-      {/* Column 3: Source Panel - Conditional, fixed width 350px, hidden on mobile */}
-      {!showAnalytics && !showKnowledgeHub && isSourcePanelOpen && selectedSources && (
-        <div className="hidden lg:block">
-          <SourcePanel
-            references={selectedSources}
-            onClose={closeSourcePanel}
+      <UserProvider>
+        <div className="flex h-screen bg-gradient-to-br from-background via-muted/20 to-accent/5 overflow-hidden">
+          {/* Column 1: Sidebar Navigation - Fixed width */}
+        {!showAnalytics && !showKnowledgeHub && (
+          <DashboardSidebar
+            onNewConversation={resetChat}
+            onAnalyticsClick={() => setShowAnalytics(true)}
+            onKnowledgeHubClick={() => setShowKnowledgeHub(true)}
           />
+        )}
+
+        {/* Main Content: Either Analytics or Chat UI */}
+        <div className="flex-1 flex flex-col min-w-0">
+          {showAnalytics ? (
+            <AnalyticsPanel onBack={() => setShowAnalytics(false)} />
+          ) : showKnowledgeHub ? (
+            <KnowledgeHubPanel onBack={() => setShowKnowledgeHub(false)} />
+          ) : (
+            <>
+              {/* Chat Header */}
+              <ChatHeader
+                documentsReady={documentCount}
+                onDocumentCountChange={setDocumentCount}
+              />
+
+              {/* Messages Area */}
+              <div className="flex-1 overflow-y-auto">
+                <ChatArea
+                  messages={messages}
+                  isTyping={isTyping}
+                  onSuggestionSelect={(question) => {
+                    setInputMessage(question);
+                    sendMessage(question);
+                  }}
+                  onOpenSources={openSourcePanel}
+                />
+              </div>
+
+              {/* Input Area */}
+              <ChatInput
+                inputMessage={inputMessage}
+                setInputMessage={setInputMessage}
+                onSendMessage={handleSendMessage}
+                disabled={isTyping}
+              />
+            </>
+          )}
         </div>
-      )}
-      </div>
+
+        {/* Column 3: Source Panel - Conditional, fixed width 350px, hidden on mobile */}
+        {!showAnalytics && !showKnowledgeHub && isSourcePanelOpen && selectedSources && (
+          <div className="hidden lg:block">
+            <SourcePanel
+              references={selectedSources}
+              onClose={closeSourcePanel}
+            />
+          </div>
+        )}
+        </div>
+      </UserProvider>
     </>
   );
 }

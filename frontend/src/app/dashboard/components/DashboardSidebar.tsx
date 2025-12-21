@@ -9,6 +9,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import { countChatQueries, calculateAverageConfidence } from "./KnowledgeHub/utils/chatUtils";
+import { useUser } from "@/contexts/UserContext";
 import { 
   Plus,
   MessageSquare,
@@ -32,6 +33,7 @@ interface DashboardSidebarProps {
 
 export function DashboardSidebar({ className, onNewConversation, onAnalyticsClick, onKnowledgeHubClick }: DashboardSidebarProps) {
   const router = useRouter();
+  const { user, clearUser } = useUser();
   const [queriesCount, setQueriesCount] = useState(0);
   const [avgAccuracy, setAvgAccuracy] = useState<number | null>(null);
 
@@ -60,7 +62,18 @@ export function DashboardSidebar({ className, onNewConversation, onAnalyticsClic
 
   const handleLogout = () => {
     localStorage.removeItem("token");
+    clearUser();
     router.push("/auth");
+  };
+
+  // Get initials from username
+  const getInitials = (name: string) => {
+    if (!name) return "U";
+    const parts = name.split(" ");
+    if (parts.length >= 2) {
+      return (parts[0][0] + parts[1][0]).toUpperCase();
+    }
+    return name.substring(0, 2).toUpperCase();
   };
 
   return (
@@ -162,20 +175,24 @@ export function DashboardSidebar({ className, onNewConversation, onAnalyticsClic
             <button className="flex items-center gap-3 w-full hover:bg-muted-foreground/10 active:bg-accent/20 rounded-xl p-2.5 transition-all duration-200 group border border-transparent hover:border-border/50">
               <div className="relative">
                 <Avatar className="w-9 h-9 border border-border shadow-sm ring-2 ring-transparent group-hover:ring-primary/20 transition-all">
-                  <AvatarFallback className="bg-gradient-to-br from-primary/20 to-accent/20 text-foreground font-semibold">JD</AvatarFallback>
+                  <AvatarFallback className="bg-gradient-to-br from-primary/20 to-accent/20 text-foreground font-semibold">
+                    {user ? getInitials(user.username) : "U"}
+                  </AvatarFallback>
                 </Avatar>
                 <span className="absolute -bottom-0.5 -right-0.5 block w-3 h-3 bg-emerald-500 border-2 border-sidebar rounded-full ring-2 ring-emerald-500/20" title="Online"></span>
               </div>
               <div className="flex flex-col text-left flex-1 min-w-0">
-                <span className="text-sm font-medium text-foreground leading-tight truncate">John Doe</span>
+                <span className="text-sm font-medium text-foreground leading-tight truncate">
+                  {user?.username || "Loading..."}
+                </span>
                 <span className="text-xs text-muted-foreground leading-tight">Admin</span>
               </div>
             </button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" side="top" className="w-56 p-2" sideOffset={8}>
             <div className="px-3 py-2 mb-2 border-b border-border">
-              <p className="text-sm font-medium text-foreground">John Doe</p>
-              <p className="text-xs text-muted-foreground">john.doe@company.com</p>
+              <p className="text-sm font-medium text-foreground">{user?.username || "Loading..."}</p>
+              <p className="text-xs text-muted-foreground">{user?.email || "Loading..."}</p>
             </div>
             <DropdownMenuItem 
               onClick={handleLogout}
