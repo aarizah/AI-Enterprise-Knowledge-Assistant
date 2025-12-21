@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
+import { BackendWakeupProvider } from "@/components/BackendWakeupProvider";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -29,7 +30,9 @@ export default function RootLayout({
       <body
         className={`${inter.variable} ${geistMono.variable} antialiased font-sans`}
       >
-        {children}
+        <BackendWakeupProvider>
+          {children}
+        </BackendWakeupProvider>
       </body>
     </html>
   );
