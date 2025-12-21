@@ -14,13 +14,21 @@ interface SourcePanelProps {
 }
 
 export function SourcePanel({ references, onClose }: SourcePanelProps) {
+  // Filtrar fuentes con confianza >= 50% (excluir rojas)
+  const filteredReferences = references.filter(ref => {
+    // Si no tiene confidence, la mostramos por defecto
+    if (ref.confidence === undefined || ref.confidence === null) return true;
+    // Solo mostrar si confidence >= 50
+    return ref.confidence >= 50;
+  });
+
   const [selectedIndex, setSelectedIndex] = useState(0);
 
-  if (!references || references.length === 0) {
+  if (!filteredReferences || filteredReferences.length === 0) {
     return null;
   }
 
-  const selectedSource = references[selectedIndex];
+  const selectedSource = filteredReferences[selectedIndex];
 
   const getConfidenceColor = (confidence?: number) => {
     if (!confidence) return "bg-slate-400";
@@ -39,7 +47,7 @@ export function SourcePanel({ references, onClose }: SourcePanelProps) {
           <div>
             <h3 className="font-semibold text-sm">Sources</h3>
             <Badge variant="secondary" className="text-[10px] mt-1 bg-emerald-50 text-emerald-700 border-emerald-200">
-              {references.length} verified
+              {filteredReferences.length} verified
             </Badge>
           </div>
         </div>
@@ -55,7 +63,7 @@ export function SourcePanel({ references, onClose }: SourcePanelProps) {
 
       {/* Tab Navigation */}
       <div className="border-b bg-background px-3 py-2 flex flex-wrap gap-2 shrink-0">
-        {references.map((ref, index) => (
+        {filteredReferences.map((ref, index) => (
           <button
             key={index}
             onClick={() => setSelectedIndex(index)}

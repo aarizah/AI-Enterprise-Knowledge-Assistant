@@ -12,13 +12,21 @@ interface SourceReferencesProps {
 }
 
 export function SourceReferences({ references, onOpenSources }: SourceReferencesProps) {
-  if (!references || references.length === 0) {
+  // Filtrar fuentes con confianza >= 50% (excluir rojas)
+  const filteredReferences = references.filter(ref => {
+    // Si no tiene confidence, la mostramos por defecto
+    if (ref.confidence === undefined || ref.confidence === null) return true;
+    // Solo mostrar si confidence >= 50
+    return ref.confidence >= 50;
+  });
+
+  if (!filteredReferences || filteredReferences.length === 0) {
     return null;
   }
 
   const handleClick = () => {
     if (onOpenSources) {
-      onOpenSources(references);
+      onOpenSources(filteredReferences);
     }
   };
 
@@ -30,7 +38,7 @@ export function SourceReferences({ references, onOpenSources }: SourceReferences
         className="hidden w-31 lg:inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-primary/50 text-accent-foreground hover:bg-primary/80 border border-primary/40 text-xs font-semibold transition-all duration-200 shadow-sm hover:shadow-md hover:-translate-y-0.5"
       >
         <BookOpen className="w-3.5 h-3.5 group-hover:scale-110 transition-transform" />
-        <span>Sources ({references.length})</span>
+        <span>Sources ({filteredReferences.length})</span>
       </button>
 
       {/* Mobile: Popover modal (below lg) */}
@@ -38,7 +46,7 @@ export function SourceReferences({ references, onOpenSources }: SourceReferences
         <PopoverTrigger asChild>
           <button className="lg:hidden inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-primary/50 text-accent-foreground hover:bg-primary/80 border border-primary/40 text-xs font-semibold transition-all duration-200 shadow-sm hover:shadow-md hover:-translate-y-0.5">
             <BookOpen className="w-3.5 h-3.5 group-hover:scale-110 transition-transform" />
-            <span>Sources ({references.length})</span>
+            <span>Sources ({filteredReferences.length})</span>
           </button>
         </PopoverTrigger>
       
@@ -55,13 +63,13 @@ export function SourceReferences({ references, onOpenSources }: SourceReferences
             Source References
           </h3>
           <p className="text-xs text-muted-foreground mt-1">
-            {references.length} {references.length === 1 ? 'source' : 'sources'} found
+            {filteredReferences.length} {filteredReferences.length === 1 ? 'source' : 'sources'} found
           </p>
         </div>
 
         <div className="max-h-[calc(100vh-120px)] overflow-y-auto">
           <div className="p-5 space-y-4">
-            {references.map((reference, index) => (
+            {filteredReferences.map((reference, index) => (
               <div key={index} className="space-y-2">
                 {/* Header with document info */}
                 <div className="flex items-start gap-2">
