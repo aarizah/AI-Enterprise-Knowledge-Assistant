@@ -23,7 +23,7 @@ interface UploadFile {
 
 const MAX_FILES = 10;
 const MAX_FILE_SIZE = 25 * 1024 * 1024; // 25 MB
-const ACCEPTED_TYPES = [".pdf", ".doc", ".docx", ".txt"];
+const ACCEPTED_TYPES = [".pdf"];
 
 export function QuickUploadModal({ open, onOpenChange, onUploadComplete }: QuickUploadModalProps) {
   const [files, setFiles] = useState<UploadFile[]>([]);
@@ -190,7 +190,7 @@ export function QuickUploadModal({ open, onOpenChange, onUploadComplete }: Quick
               Click to upload or drag and drop
             </p>
             <p className="text-xs text-muted-foreground">
-              PDF, DOC, DOCX, TXT up to {formatFileSize(MAX_FILE_SIZE)}
+              PDF up to {formatFileSize(MAX_FILE_SIZE)}
             </p>
           </div>
 

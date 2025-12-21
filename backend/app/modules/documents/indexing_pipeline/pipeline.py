@@ -10,6 +10,7 @@ from .chunks.chunker import Chunker
 from .embeddings.embedder import Embedder
 from app.modules.documents.storage_utils import SupabaseStorage
 from app.modules.documents.repository import DocumentRepository
+from app.modules.chat.pricing import calculate_indexing_cost
 import tempfile
 import os
 
@@ -68,6 +69,9 @@ class IngestionPipeline:
                     self.repository.update_document_status(document_id, "failed")
                     raise ValueError(f"No chunks could be created from {document.filename}")
                 
+                # Calcular costo de indexación
+                indexing_cost = calculate_indexing_cost(final_chunks)
+                
                 # 3. Generar y guardar embeddings
                 stored_count = self.embedder.generate_and_store_embeddings(final_chunks, document_id)
                 
@@ -75,7 +79,8 @@ class IngestionPipeline:
                 self.repository.update_document_processing_result(
                     document_id, 
                     chunks_count=len(final_chunks), 
-                    status="processed"
+                    status="processed",
+                    indexing_cost=indexing_cost
                 )
                 
                 results.append({
@@ -83,7 +88,8 @@ class IngestionPipeline:
                     "filename": document.filename,
                     "status": "processed",
                     "chunks_count": len(final_chunks),
-                    "embeddings_stored": stored_count
+                    "embeddings_stored": stored_count,
+                    "indexing_cost": indexing_cost
                 })
                 
             except Exception as e:

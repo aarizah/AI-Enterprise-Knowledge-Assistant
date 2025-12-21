@@ -6,7 +6,9 @@ from app.modules.auth import init_module as init_auth
 from app.modules.chat import init_module as init_chat
 from app.modules.documents import init_module as init_documents
 from app.modules.health import init_module as init_health
+from app.modules.analytics import init_module as init_analytics
 from app.core.exceptions import register_core_exception_handlers
+from app.core.observability import ObservationMiddleware
 
 app = FastAPI()
 
@@ -20,6 +22,8 @@ app.add_middleware(
     expose_headers=["*"],
 )
 
+app.add_middleware(ObservationMiddleware)
+
 register_core_exception_handlers(app)
 
 # Initialize modules
@@ -27,6 +31,7 @@ init_health(app)
 init_auth(app)
 init_chat(app)
 init_documents(app)
+init_analytics(app)
 
 init_db()
 

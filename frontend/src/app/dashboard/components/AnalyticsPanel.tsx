@@ -1,35 +1,109 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { ArrowLeft, CheckCircle2, Zap, DollarSign, Info } from "lucide-react";
-// Fake/mock data for analytics
-const analyticsData = {
-  citationRate: 92,
-  citationRateChange: 5,
-  avgResponseTime: 1.2,
-  avgResponseTimeChange: -0.3,
-  monthlyCost: 124,
-  monthlyCostChange: -35,
-  noAnswerRate: 3,
-  queryVolume: Array.from({ length: 30 }, (_, i) => Math.floor(20 + Math.random() * 20)),
-  responseQuality: [
-    { label: "High Confidence (90-100%)", value: 68, color: "bg-chart-2" },
-    { label: "Medium Confidence (70-89%)", value: 24, color: "bg-primary" },
-    { label: "Low Confidence (50-69%)", value: 5, color: "bg-chart-5" },
-    { label: "No Answer (No sources found)", value: 3, color: "bg-muted" },
-  ],
-  systemPerformance: {
-    vectorSearch: 45,
-    vectorSearchP95: 68,
-    llmGeneration: 890,
-    llmGenerationP95: 1800,
-    cacheHitRate: 78,
-    cacheSavings: 43,
-  },
-  costAnalysis: [
-    { label: "GPT-4 Queries", value: 89.2 },
-    { label: "Embeddings Generation", value: 24.5 },
-  ],
-};
+
+interface AnalyticsData {
+  citation_rate: number;
+  no_answer_rate: number;
+  avg_response_time: number;
+  query_volume: number;
+  high_confidence_rate: number;
+  medium_confidence_rate: number;
+  low_confidence_rate: number;
+  vector_cost: number;
+  llm_total_cost: number;
+  vector_retrieval_time_avg: number;
+  llm_response_time_avg: number;
+  vector_retrieval_time_p95: number;
+  llm_response_time_p95: number;
+  response_time_p95: number;
+  total_indexing_cost: number;
+}
+
 function AnalyticsPanel({ onBack }: { onBack: () => void }) {
+  const [analyticsData, setAnalyticsData] = useState<AnalyticsData | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchAnalytics = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        const response = await fetch("http://localhost:8000/analytics/", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        if (!response.ok) {
+          throw new Error("Failed to fetch analytics");
+        }
+
+        const data = await response.json();
+        setAnalyticsData(data);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "Unknown error");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchAnalytics();
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="w-full h-full min-h-screen bg-gradient-to-br from-background via-muted/20 to-accent/5 flex items-center justify-center">
+        <div className="text-muted-foreground">Loading analytics...</div>
+      </div>
+    );
+  }
+
+  if (error || !analyticsData) {
+    return (
+      <div className="w-full h-full min-h-screen bg-gradient-to-br from-background via-muted/20 to-accent/5 flex items-center justify-center">
+        <div className="text-destructive">Error: {error || "No data available"}</div>
+      </div>
+    );
+  }
+
+  // Map backend data to display format
+  const citationRatePercent = Math.round(analyticsData.citation_rate * 100);
+  const noAnswerRatePercent = Math.round(analyticsData.no_answer_rate * 100);
+  const avgResponseTime = analyticsData.avg_response_time.toFixed(2);
+  const monthlyCost = (analyticsData.vector_cost + analyticsData.llm_total_cost + analyticsData.total_indexing_cost).toFixed(2);
+
+  const responseQuality = [
+    { 
+      label: "High Confidence (>70%)", 
+      value: Math.round(analyticsData.high_confidence_rate * 100), 
+      color: "bg-chart-2" 
+    },
+    { 
+      label: "Medium Confidence (50-70%)", 
+      value: Math.round(analyticsData.medium_confidence_rate * 100), 
+      color: "bg-primary" 
+    },
+    { 
+      label: "Low Confidence (<50%)", 
+      value: Math.round(analyticsData.low_confidence_rate * 100), 
+      color: "bg-chart-5" 
+    },
+    { 
+      label: "No Answer (No sources found)", 
+      value: noAnswerRatePercent, 
+      color: "bg-muted" 
+    },
+  ];
+
+  const costAnalysis = [
+    { label: "LLM Queries", value: analyticsData.llm_total_cost },
+    { label: "Vector Search", value: analyticsData.vector_cost },
+    { label: "Document Indexing", value: analyticsData.total_indexing_cost },
+  ];
+
+  // Generate mock query volume (since we don't have daily breakdown)
+  const queryVolume = Array.from({ length: 30 }, () => Math.floor(Math.random() * 20) + 10);
+  
   return (
     <div className="w-full h-full min-h-screen bg-gradient-to-br from-background via-muted/20 to-accent/5 flex flex-col overflow-y-auto">
       {/* Header */}
@@ -42,10 +116,9 @@ function AnalyticsPanel({ onBack }: { onBack: () => void }) {
           <span>Back to Chat</span>
         </button>
         <div className="flex flex-col">
-          <span className=" text-foreground tracking-tight">Analytics</span>
+          <span className=" text-foreground tracking-tight">History Analytics</span>
           <span className="text-sm text-muted-foreground -mt-1">Performance, quality, and cost metrics</span>
         </div>
-        
       </div>
 
       {/* Content */}
@@ -54,25 +127,25 @@ function AnalyticsPanel({ onBack }: { onBack: () => void }) {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           <StatCard
             title="Citation Rate"
-            value={`${analyticsData.citationRate}%`}
-            change={`+${analyticsData.citationRateChange}% vs last month`}
+            value={`${citationRatePercent}%`}
+            change={`${analyticsData.query_volume} queries processed`}
             icon={<CheckCircle2 className="w-5 h-5 text-chart-2" />}
           />
           <StatCard
             title="Avg Response Time"
-            value={`${analyticsData.avgResponseTime}s`}
-            change={`~${analyticsData.avgResponseTimeChange}s improvement`}
+            value={`${avgResponseTime}s`}
+            change={`p95: ${analyticsData.response_time_p95.toFixed(2)}s`}
             icon={<Zap className="w-5 h-5 text-chart-4" />}
           />
           <StatCard
-            title="Monthly Cost"
-            value={`$${analyticsData.monthlyCost}`}
-            change={`~${analyticsData.monthlyCostChange}% with caching`}
+            title="Total Cost"
+            value={`$${monthlyCost}`}
+            change="LLM + Vector + Indexing"
             icon={<DollarSign className="w-5 h-5 text-primary" />}
           />
           <StatCard
             title={'"No Answer" Rate'}
-            value={`${analyticsData.noAnswerRate}%`}
+            value={`${noAnswerRatePercent}%`}
             change="Better than hallucinating"
             icon={<Info className="w-5 h-5 text-muted-foreground" />}
           />
@@ -82,12 +155,12 @@ function AnalyticsPanel({ onBack }: { onBack: () => void }) {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           <div className="bg-card rounded-2xl shadow-sm p-6 flex flex-col gap-2 border border-border">
             <div className="font-semibold text-foreground/80 text-lg">Query Volume</div>
-            <div className="text-xs text-muted-foreground mb-2">Daily queries over the last 30 days</div>
+            <div className="text-xs text-muted-foreground mb-2">Total queries: {analyticsData.query_volume}</div>
             <div className="flex items-end gap-1 h-24">
-              {analyticsData.queryVolume.map((v, i) => (
+              {queryVolume.map((v, i) => (
                 <div
                   key={i}
-                  className={`w-2 rounded-t ${i === analyticsData.queryVolume.length - 1 ? "bg-primary" : "bg-muted"}`}
+                  className={`w-2 rounded-t ${i === queryVolume.length - 1 ? "bg-primary" : "bg-muted"}`}
                   style={{ height: `${v * 2}px` }}
                 />
               ))}
@@ -97,7 +170,7 @@ function AnalyticsPanel({ onBack }: { onBack: () => void }) {
             <div className="font-semibold text-foreground/80 text-lg">Response Quality Breakdown</div>
             <div className="text-xs text-muted-foreground mb-2">How confident and accurate are responses</div>
             <div className="flex flex-col gap-3">
-              {analyticsData.responseQuality.map((q) => (
+              {responseQuality.map((q) => (
                 <div key={q.label} className="flex items-center gap-2">
                   <div className={`w-2 h-2 rounded-full ${q.color}`}></div>
                   <div className="flex-1 text-xs text-muted-foreground">{q.label}</div>
@@ -118,38 +191,30 @@ function AnalyticsPanel({ onBack }: { onBack: () => void }) {
             <div className="flex flex-col gap-3">
               <PerfBar
                 label="Vector Search"
-                value={analyticsData.systemPerformance.vectorSearch}
-                p95={analyticsData.systemPerformance.vectorSearchP95}
+                value={Math.round(analyticsData.vector_retrieval_time_avg * 1000)}
+                p95={Math.round(analyticsData.vector_retrieval_time_p95 * 1000)}
                 colorClass="bg-chart-2"
                 unit="ms"
               />
               <PerfBar
                 label="LLM Generation"
-                value={analyticsData.systemPerformance.llmGeneration}
-                p95={analyticsData.systemPerformance.llmGenerationP95}
+                value={Math.round(analyticsData.llm_response_time_avg * 1000)}
+                p95={Math.round(analyticsData.llm_response_time_p95 * 1000)}
                 colorClass="bg-primary"
                 unit="ms"
-              />
-              <PerfBar
-                label="Cache Hit Rate"
-                value={analyticsData.systemPerformance.cacheHitRate}
-                p95={null}
-                colorClass="bg-primary"
-                unit="%"
-                extra={`Saving ~$${analyticsData.systemPerformance.cacheSavings}/month`}
               />
             </div>
           </div>
           <div className="bg-card rounded-2xl shadow-sm p-6 flex flex-col gap-2 border border-border">
             <div className="font-semibold text-foreground/80 mb-2 text-lg">Cost Analysis</div>
             <div className="flex flex-col gap-3">
-              {analyticsData.costAnalysis.map((c) => (
+              {costAnalysis.map((c) => (
                 <div key={c.label} className="flex items-center gap-2">
                   <div className="flex-1 text-xs text-muted-foreground">{c.label}</div>
                   <div className="w-2/3 h-2 bg-muted rounded-full overflow-hidden">
-                    <div className="bg-primary h-2 rounded-full" style={{ width: `${c.value * 0.8}%` }}></div>
+                    <div className="bg-primary h-2 rounded-full" style={{ width: `${Math.min((c.value / parseFloat(monthlyCost)) * 100, 100)}%` }}></div>
                   </div>
-                  <div className="text-xs text-muted-foreground w-12 text-right">${c.value.toFixed(2)}</div>
+                  <div className="text-xs text-muted-foreground w-12 text-right">${c.value.toFixed(4)}</div>
                 </div>
               ))}
             </div>

@@ -9,3 +9,5 @@ Thumbs.db
 # Env files (if shared)
 .env
 *.env.local
+*.env.staging
+*.env.production

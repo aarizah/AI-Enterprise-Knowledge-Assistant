@@ -33,7 +33,7 @@ def generate_answer(query: str, chunks: List[Dict[str, any]]) -> Dict[str, any]:
         })
         return {
             "answer": result,
-            "sources": chunks
+            "sources": chunks, 
         }
     except Exception as e:
         from app.modules.chat.exceptions import LLMServiceError

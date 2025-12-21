@@ -9,7 +9,6 @@ from app.modules.documents.schemas import DocumentResponse, DocumentListResponse
 from app.modules.documents.indexing_pipeline.pipeline import IngestionPipeline
 from app.modules.documents.storage_utils import storage
 
-
 class DocumentService:
     
     def __init__(self, repository: DocumentRepository, ingestion_pipeline: IngestionPipeline):
@@ -20,6 +19,7 @@ class DocumentService:
     def index_documents(self, document_ids: List[int], user: UserContext):
         self._validate_user(user)
         results = self.pipeline.process_documents(document_ids)
+        
         return {"results": results}
     
     def delete_document(self, document_id: int, user: UserContext) -> bool:

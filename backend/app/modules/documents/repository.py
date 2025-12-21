@@ -1,7 +1,6 @@
 from sqlalchemy.orm import Session
-from app.modules.documents.models import Document, Embedding
+from app.modules.documents.models import Document
 from typing import List, Optional
-from pathlib import Path
 
 
 class DocumentRepository:
@@ -70,12 +69,14 @@ class DocumentRepository:
             return True
         return False
 
-    def update_document_processing_result(self, document_id: int, chunks_count: int, status: str) -> bool:
+    def update_document_processing_result(self, document_id: int, chunks_count: int, status: str, indexing_cost: float | None = None) -> bool:
         """Actualizar resultado completo del procesamiento"""
         document = self.get_document_by_id(document_id)
         if document:
             document.chunks_count = chunks_count
             document.status = status
+            if indexing_cost is not None:
+                document.indexing_cost = indexing_cost
             self.db.commit()
             self.db.refresh(document)
             return True

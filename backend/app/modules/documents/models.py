@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, DateTime, ForeignKey
+from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, Float
 from sqlalchemy.orm import relationship
 from sqlalchemy.dialects.postgresql import JSONB
 from pgvector.sqlalchemy import Vector
@@ -18,8 +18,8 @@ class Document(Base):
     chunks_count = Column(Integer, default=0, nullable=False)
     file_size_bytes = Column(Integer, nullable=True)
     status = Column(String(20), default="processed", nullable=False)  # processing, processed, failed
+    indexing_cost = Column(Float, nullable=True)  # Costo de indexación en usd
     
-    # Relación con embeddings
     embeddings = relationship("Embedding", back_populates="document", cascade="all, delete-orphan")
 
 

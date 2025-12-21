@@ -1,4 +1,7 @@
 from pydantic_settings import BaseSettings
+import os
+
+ENV = os.getenv("ENV", "staging")
 
 class Settings(BaseSettings):
     database_url: str
@@ -12,6 +15,6 @@ class Settings(BaseSettings):
     SUPABASE_BUCKET: str
 
     class Config:
-        env_file = ".env"
+        env_file = f".env.{ENV}"
 
 settings = Settings()

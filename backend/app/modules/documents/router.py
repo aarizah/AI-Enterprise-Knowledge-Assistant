@@ -1,5 +1,5 @@
 from typing import Optional, Annotated, List
-from fastapi import APIRouter, Depends, UploadFile, File, Form
+from fastapi import APIRouter, Depends, UploadFile, File, Form, Request
 from sqlalchemy.orm import Session
 
 from app.core.database import get_db
@@ -26,7 +26,7 @@ def get_document_service(db: Annotated[Session, Depends(get_db)]) -> DocumentSer
 async def upload_and_process_documents(
     files: List[UploadFile] = File(...),
     user: UserContext = Depends(get_and_verify_user),
-    service: DocumentService = Depends(get_document_service),
+    service: DocumentService = Depends(get_document_service)
 ):
     documents = await service.upload_documents(files, user)
     document_ids = [doc.id for doc in documents]
