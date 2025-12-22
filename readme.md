@@ -11,9 +11,11 @@
 [![Next.js](https://img.shields.io/badge/next.js-14+-black)](https://nextjs.org/)
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.116+-009688.svg)](https://fastapi.tiangolo.com)
 
-🔗 **[Live Demo](https://your-live-demo-url.vercel.app)** | 📖 **[API Docs](https://your-backend-url.com/docs)**
+## 🎥 Product Demo
 
-<!-- ACA VA: Video demo (2-3 min) o GIF animado mostrando: upload → processing → chat con respuesta -->
+🔗 **Try it now:** https://eka-ten.vercel.app  
+
+[![EKA – Enterprise Knowledge Assistant Demo](https://img.youtube.com/vi/6fdRzY7N60M/0.jpg)](https://youtu.be/6fdRzY7N60M)
 
 ---
 
@@ -105,12 +107,10 @@ This project is licensed under the **MIT License** – see the [LICENSE](LICENSE
 ## 👤 Contact & Connect
 
 **Alex Ariza Herrera**  
-Full-Stack Engineer | AI/ML Enthusiast | Open to Remote Opportunities
+Software Engineer | Full-Stack + AI | LLM Integrations | AI-Driven Product Development
 
-- 💼 **LinkedIn:** [linkedin.com/in/alexarizaherrera](https://linkedin.com/in/alexarizaherrera)
+- 💼 **LinkedIn:** [linkedin.com/in/alex-ariza-herrera/](https://www.linkedin.com/in/alex-ariza-herrera/)
 - 🌐 **Portfolio:** [alexariza.dev](https://alexariza.dev)
-- 📧 **Email:** alex.ariza@example.com
-- 🐙 **GitHub:** [@aarizah](https://github.com/aarizah)
 
 ---
 
