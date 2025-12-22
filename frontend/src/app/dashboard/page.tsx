@@ -15,8 +15,9 @@ import { UserProvider } from "@/contexts/UserContext";
 export default function Dashboard() {
   const [showAnalytics, setShowAnalytics] = useState(false);
   const [showKnowledgeHub, setShowKnowledgeHub] = useState(false);
-  const [documentCount, setDocumentCount] = useState(247);
+  const [documentCount, setDocumentCount] = useState(0);
   const router = useRouter();
+  
   useEffect(() => {
     const token = localStorage.getItem("token");
     fetch(`${settings.backendUrl}/auth/me`, {
@@ -33,6 +34,31 @@ export default function Dashboard() {
         router.replace("/auth");
       });
   }, [router]);
+
+  // Obtener el número real de documentos
+  useEffect(() => {
+    const fetchDocumentCount = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        if (!token) return;
+
+        const response = await fetch(`${settings.backendUrl}/documents?skip=0&limit=1`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          setDocumentCount(data.total || 0);
+        }
+      } catch (error) {
+        console.error("Error fetching document count:", error);
+      }
+    };
+
+    fetchDocumentCount();
+  }, []);
 
   const {
     messages,
@@ -84,6 +110,7 @@ export default function Dashboard() {
                 <ChatArea
                   messages={messages}
                   isTyping={isTyping}
+                  documentCount={documentCount}
                   onSuggestionSelect={(question) => {
                     setInputMessage(question);
                     sendMessage(question);

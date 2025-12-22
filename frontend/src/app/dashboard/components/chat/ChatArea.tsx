@@ -10,11 +10,12 @@ import { SUGGESTED_QUESTIONS } from "@/app/dashboard/constants";
 interface ChatAreaProps {
   messages: Message[];
   isTyping: boolean;
+  documentCount?: number;
   onSuggestionSelect?: (question: string) => void;
   onOpenSources?: (sources: SourceReference[]) => void;
 }
 
-export function ChatArea({ messages, isTyping, onSuggestionSelect, onOpenSources }: ChatAreaProps) {
+export function ChatArea({ messages, isTyping, documentCount = 0, onSuggestionSelect, onOpenSources }: ChatAreaProps) {
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const scrollToBottom = () => {
@@ -68,7 +69,7 @@ export function ChatArea({ messages, isTyping, onSuggestionSelect, onOpenSources
           />
         ))}
         
-        {isTyping && <LoadingBar text="Searching 247 documents..." />}
+        {isTyping && <LoadingBar text={`Searching ${documentCount} ${documentCount === 1 ? 'document' : 'documents'}...`} />}
         
         <div ref={messagesEndRef} />
       </div>

@@ -10,7 +10,7 @@ interface ChatHeaderProps {
   onDocumentCountChange?: (count: number) => void;
 }
 
-export function ChatHeader({ documentsReady = 247, onDocumentCountChange }: ChatHeaderProps) {
+export function ChatHeader({ documentsReady = 0, onDocumentCountChange }: ChatHeaderProps) {
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
   const [docCount, setDocCount] = useState(documentsReady);
 
