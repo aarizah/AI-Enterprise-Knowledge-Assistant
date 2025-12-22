@@ -109,11 +109,19 @@ class SupabaseStorage:
             
             # Intentar obtener metadata del archivo
             try:
-                # Listar archivos y buscar el que coincida
-                files = self.client.storage.from_(self.bucket_name).list()
-                matching_file = next((f for f in files if f['name'] == file_path), None)
+                # Si el path tiene carpetas (ej: user_1/archivo.pdf), listar dentro de esa carpeta
+                path_parts = file_path.split('/')
+                if len(path_parts) > 1:
+                    folder = '/'.join(path_parts[:-1])  # user_1
+                    files = self.client.storage.from_(self.bucket_name).list(folder)
+                    matching_file = next((f for f in files if f['name'] == filename), None)
+                else:
+                    files = self.client.storage.from_(self.bucket_name).list()
+                    matching_file = next((f for f in files if f['name'] == file_path), None)
+                
                 file_size = matching_file.get('metadata', {}).get('size', 0) if matching_file else 0
-            except:
+            except Exception as e:
+                print(f"Warning: Could not get file size for {file_path}: {e}")
                 file_size = 0
             
             return {
