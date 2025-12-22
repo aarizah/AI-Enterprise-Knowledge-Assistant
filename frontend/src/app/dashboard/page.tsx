@@ -35,28 +35,29 @@ export default function Dashboard() {
       });
   }, [router]);
 
-  // Obtener el número real de documentos
-  useEffect(() => {
-    const fetchDocumentCount = async () => {
-      try {
-        const token = localStorage.getItem("token");
-        if (!token) return;
+  // Función para obtener el número real de documentos
+  const fetchDocumentCount = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) return;
 
-        const response = await fetch(`${settings.backendUrl}/documents?skip=0&limit=1`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
+      const response = await fetch(`${settings.backendUrl}/documents?skip=0&limit=1`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
-        if (response.ok) {
-          const data = await response.json();
-          setDocumentCount(data.total || 0);
-        }
-      } catch (error) {
-        console.error("Error fetching document count:", error);
+      if (response.ok) {
+        const data = await response.json();
+        setDocumentCount(data.total || 0);
       }
-    };
+    } catch (error) {
+      console.error("Error fetching document count:", error);
+    }
+  };
 
+  // Obtener el número real de documentos al cargar
+  useEffect(() => {
     fetchDocumentCount();
   }, []);
 
@@ -102,7 +103,7 @@ export default function Dashboard() {
               {/* Chat Header */}
               <ChatHeader
                 documentsReady={documentCount}
-                onDocumentCountChange={setDocumentCount}
+                onRefreshDocumentCount={fetchDocumentCount}
               />
 
               {/* Messages Area */}

@@ -7,17 +7,15 @@ import { Upload, Database } from "lucide-react";
 
 interface ChatHeaderProps {
   documentsReady?: number;
-  onDocumentCountChange?: (count: number) => void;
+  onRefreshDocumentCount?: () => void;
 }
 
-export function ChatHeader({ documentsReady = 0, onDocumentCountChange }: ChatHeaderProps) {
+export function ChatHeader({ documentsReady = 0, onRefreshDocumentCount }: ChatHeaderProps) {
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
-  const [docCount, setDocCount] = useState(documentsReady);
 
   const handleUploadComplete = () => {
-    const newCount = docCount + 1;
-    setDocCount(newCount);
-    onDocumentCountChange?.(newCount);
+    // Refrescar el conteo real desde el backend
+    onRefreshDocumentCount?.();
   };
 
   return (
@@ -28,7 +26,7 @@ export function ChatHeader({ documentsReady = 0, onDocumentCountChange }: ChatHe
           <div className="flex items-center gap-1.5 px-2.5 py-1 bg-emerald-50 rounded-lg border border-emerald-200/50">
             <Database className="w-3.5 h-3.5 text-emerald-600" />
             <span className="text-xs font-medium text-emerald-700">
-              {docCount} {docCount === 1 ? "document" : "documents"} ready
+              {documentsReady} {documentsReady === 1 ? "document" : "documents"} ready
             </span>
           </div>
         </div>
