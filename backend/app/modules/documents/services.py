@@ -52,12 +52,12 @@ class DocumentService:
 
     async def upload_documents(self, files: List[UploadFile], user: UserContext) -> List[Document]:
         self._validate_user(user)
-        file_paths = await storage.save_uploaded_files(files)
+        file_paths = await storage.save_uploaded_files(files, user_id=user.id)
         
         documents = []
         for file_path in file_paths:
             file_info = storage.get_file_info(file_path)
-            existing_doc = self.repository.get_document_by_filename(file_info["filename"])
+            existing_doc = self.repository.get_document_by_filename_and_user(file_info["filename"], user.id)
             
             if existing_doc:
                 self.repository.update_document_metadata(

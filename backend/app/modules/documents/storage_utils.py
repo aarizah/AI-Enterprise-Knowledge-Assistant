@@ -27,12 +27,19 @@ class SupabaseStorage:
         except Exception as e:
             print(f"Warning: Could not verify bucket existence: {e}")
     
-    async def save_uploaded_file(self, file: UploadFile, filename: Optional[str] = None) -> str:
+    async def save_uploaded_file(self, file: UploadFile, filename: Optional[str] = None, user_id: Optional[int] = None) -> str:
         """
         Guarda un archivo en Supabase Storage
+        Si se proporciona user_id, guarda en carpeta user_<user_id>/filename
         Returns: La ruta del archivo en Supabase (path/to/file.ext)
         """
-        dest_name = filename or file.filename or f"uploaded_{uuid.uuid4()}"
+        base_filename = filename or file.filename or f"uploaded_{uuid.uuid4()}"
+        
+        # Organizar por usuario si se proporciona user_id
+        if user_id:
+            dest_name = f"user_{user_id}/{base_filename}"
+        else:
+            dest_name = base_filename
         
         # Leer el contenido del archivo
         file_content = await file.read()
@@ -58,12 +65,12 @@ class SupabaseStorage:
                 return dest_name
             raise Exception(f"Error uploading file to Supabase: {e}")
     
-    async def save_uploaded_files(self, files: List[UploadFile]) -> List[str]:
+    async def save_uploaded_files(self, files: List[UploadFile], user_id: Optional[int] = None) -> List[str]:
         """Guarda múltiples archivos en Supabase Storage"""
         saved_paths = []
         
         for file in files:
-            path = await self.save_uploaded_file(file)
+            path = await self.save_uploaded_file(file, user_id=user_id)
             saved_paths.append(path)
         
         return saved_paths

@@ -10,7 +10,7 @@ class Document(Base):
     __tablename__ = "documents"
 
     id = Column(Integer, primary_key=True, index=True)
-    filename = Column(String, nullable=False, unique=True, index=True)
+    filename = Column(String, nullable=False, index=True)
     file_path = Column(String, nullable=True)
     file_type = Column(String(10), nullable=False)  # pdf, docx, md
     upload_date = Column(DateTime, default=datetime.utcnow, nullable=False)

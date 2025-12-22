@@ -38,6 +38,13 @@ class DocumentRepository:
         """Obtener un documento por su nombre de archivo"""
         return self.db.query(Document).filter(Document.filename == filename).first()
 
+    def get_document_by_filename_and_user(self, filename: str, user_id: int) -> Optional[Document]:
+        """Obtener un documento por su nombre de archivo y usuario"""
+        return self.db.query(Document).filter(
+            Document.filename == filename,
+            Document.user_id == user_id
+        ).first()
+
     def get_document_by_id(self, document_id: int) -> Optional[Document]:
         """Obtener un documento por su ID"""
         return self.db.query(Document).filter(Document.id == document_id).first()
