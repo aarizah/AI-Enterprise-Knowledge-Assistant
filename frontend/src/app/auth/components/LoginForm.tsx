@@ -99,7 +99,7 @@ export function LoginForm({ onLogin, onRegisterClick, isLoading = false, error }
         </CardContent>
 
         <CardFooter className="flex flex-col space-y-4">
-          <Button type="submit" className="w-full" disabled={isLoading}>
+          <Button type="submit" className="w-full max-w-xs mx-auto bg-gradient-to-r from-primary/80 to-accent/80 hover:from-primary hover:to-accent" disabled={isLoading}>
             {isLoading ? "Signing in..." : "Sign In"}
           </Button>
           

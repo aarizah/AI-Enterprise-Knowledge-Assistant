@@ -7,6 +7,8 @@ import axios from "axios"
 import { settings } from "@/lib/settings"
 import { useRouter } from "next/navigation"
 import { AxiosError } from "axios"
+import { Button } from "@/components/ui/button"
+import { ArrowLeft } from "lucide-react"
 
 export default function AuthPage() {
   
@@ -58,7 +60,15 @@ export default function AuthPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4">
+    <div className="min-h-screen flex items-center justify-center p-4 relative">
+      <Button
+        variant="ghost"
+        className="absolute top-4 left-4 hover:bg-transparent hover:text-primary"
+        onClick={() => router.push("/")}
+      >
+        <ArrowLeft className="w-4 h-4 mr-2" />
+        
+      </Button>
       <div className="w-full max-w-md">
         {isLogin ? (
           <LoginForm

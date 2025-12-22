@@ -1,139 +1,121 @@
-# Case Study – AI Enterprise Knowledge Assistant (EKA)
+# EKA – Enterprise Knowledge Assistant 🚀
 
-## 1. Resumen en una línea
+> **Production-grade RAG system** that transforms enterprise documents into an AI-powered Q&A assistant. Built with modern tech stack: Next.js, FastAPI, PostgreSQL + pgvector, and LangChain.
 
-Un asistente tipo *ChatGPT con datos internos de la empresa*, que responde con **citas verificables** y puede **ejecutar acciones** (crear tickets, enviar reportes, actualizar CRM) directamente desde Slack o web.
+**💡 The Problem:** Teams waste 2-3 hours daily searching through scattered documents (PDFs, Word docs, wikis) instead of focusing on high-value work.
 
----
+**✅ The Solution:** Upload documents once, ask questions in natural language, get instant answers with source citations. Think "ChatGPT for your company's knowledge base."
 
-## 2. Problema
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Python 3.12+](https://img.shields.io/badge/python-3.12+-blue.svg)](https://www.python.org/downloads/)
+[![Next.js](https://img.shields.io/badge/next.js-14+-black)](https://nextjs.org/)
+[![FastAPI](https://img.shields.io/badge/FastAPI-0.116+-009688.svg)](https://fastapi.tiangolo.com)
 
-- El conocimiento interno está disperso en **PDFs, wikis, Google Drive, Notion**.
-- Los empleados pierden **4–6 horas/semana** buscando información o preguntando a otros.
-- El soporte interno (IT, HR, Legal) está **saturado**, generando cuellos de botella.
-- Los chatbots tradicionales **alucinan** o no integran acciones, creando desconfianza.
+🔗 **[Live Demo](https://your-live-demo-url.vercel.app)** | 📖 **[API Docs](https://your-backend-url.com/docs)**
 
-**Impacto negativo:** tiempo perdido, decisiones lentas, soporte colapsado, riesgo reputacional por respuestas erróneas.
-
----
-
-## 3. Solución
-
-El **EKA** conecta todo el conocimiento interno, responde con **citas verificables** y ejecuta **acciones reales** en los sistemas de la empresa.
-
-- **Conexión a fuentes**: PDFs, Google Drive, Confluence, Notion.
-- **Respuestas con citación**: si no encuentra evidencia, responde “no answer”.
-- **Acciones directas**: crear ticket en Jira, enviar email, actualizar HubSpot.
-- **Seguridad corporativa**: RBAC (roles), SSO con Google/Slack, aislamiento de datos.
-- **Observabilidad**: métricas de uso, latencia, coste por consulta, ratio de “no answer”.
+<!-- ACA VA: Video demo (2-3 min) o GIF animado mostrando: upload → processing → chat con respuesta -->
 
 ---
 
-## 4. Diferenciadores clave
+## 🎯 Key Features
 
-- **No es un “chat con PDFs”**:
-    - Respuestas siempre citadas y auditables.
-    - Si no hay evidencia, no inventa.
-- **Acciona, no solo responde**: genera tickets, emails o actualiza CRMs.
-- **Pensado como micro-SaaS**: multi-tenant, auth básica, aislamiento de datos.
-- **Enfoque de producto**: instalación en 5 minutos, UX simple, onboarding guiado.
-- **Reliability y coste**: multi-model routing, caching, fallback para latencia y ahorro.
+- 📄 **Multi-format document processing** (PDF, DOCX, TXT) with smart chunking
+- 🔍 **Vector search** via PostgreSQL + pgvector for semantic retrieval
+- 💬 **Streaming answers** from GPT-4 with automatic source citations
+- 🔐 **JWT auth** + per-user document isolation
+- 📊 **Analytics** for usage tracking and cost monitoring
 
 ---
 
-## 5. Arquitectura de alto nivel
+## 🛠️ Tech Stack
 
-**Ingesta** (connectors: PDF/Drive) → **Prepro** (chunking + metadata) → **Vector DB (Postgres/pgvector)** → **Orquestación** (LangChain/LlamaIndex + tools) → **LLM** → **Guardrails** (citación/PII/no answer) → **Acciones** (APIs: Jira/Gmail/HubSpot) → **Telemetría** (logs, latencia, coste).
+**Frontend:** Next.js 14 (App Router, TypeScript) · Tailwind + shadcn/ui · SSE streaming
 
----
+**Backend:** FastAPI (Python 3.12+, async) · SQLAlchemy · LangChain · Pydantic v2
 
-## 6. MVP funcional (lo que mostré)
+**Data & AI:** PostgreSQL + pgvector · VoyageAI embeddings · OpenAI GPT-4 · Supabase storage
 
-- Subir documentos (PDF/Google Drive).
-- Chat con citación de fuente.
-- Botón de acción: “crear ticket en Jira” o “enviar email”.
-- Panel admin: gestión de datasets, roles y métricas básicas.
-- Deploy público con login Google/Slack.
+**DevOps:** Docker Compose · Multi-stage builds · `uv` dependency manager
 
 ---
 
-## 7. Métricas instrumentadas
+## 📐 Architecture
 
-- **Calidad:** % respuestas con cita, ratio “no answer”.
-- **Rendimiento:** tiempo medio a primera respuesta, p95 < 2s.
-- **Coste:** $/100 consultas, % ahorro con caching.
-- **Seguridad:** PII detectada y redacción automática.
-- **Adopción:** consultas/día, usuarios activos, CSAT básico (👍👎).
+**Clean Architecture** with Repository Pattern: `Router → Service → Repository → Database`
 
----
+**Backend:** Domain-driven modules (`auth`, `documents`, `chat`, `analytics`, `users`) with FastAPI dependency injection.
 
-## 8. Resultados (con datos simulados)
-
-- **40% menos tiempo** de búsqueda interna.
-- **30% menos tickets** a soporte de IT/HR.
-- **92% de respuestas con citación verificable**.
-- **35% de reducción en coste por consulta** usando multi-model routing + caching.
+📄 **Detailed C4 diagrams** in `docs/c4/`
 
 ---
 
-## 9. Riesgos y trade-offs
+## 🔄 RAG Pipeline
 
-- **Costo LLM** → mitigado con caching y modelos más baratos para queries simples.
-- **Privacidad** → opción de self-host on-prem (docker-compose).
-- **UX adoption** → onboarding guiado, botón de feedback (“👍/👎”) para ganar confianza.
-
----
-
-## 10. Pitch de 20 segundos (para entrevistas)
-
-> “Construí un asistente de IA que conecta el conocimiento interno de una empresa, responde solo con citas verificables y puede ejecutar acciones en los sistemas. Se instala en Slack en 5 minutos y reduce en más de 30% el tiempo que empleados gastan buscando información.”
-> 
-
----
-
-## 11. Futuro (si lo llevara más allá del portafolio)
-
-- Integración con más SaaS (Confluence, Salesforce).
-- Dashboard de analytics por equipo/área.
-- Autoservicio: los usuarios conectan sus propias fuentes.
-- Fine-tuning ligero con feedback interno.
-
----
-
-## Modo desarrollo rápido (DB en Docker)
-
-Para iterar el backend y frontend con hot-reload sin reconstruir contenedores, levanta solo la base de datos con Docker y corre frontend/backend localmente.
-
-1) Levantar solo la base de datos (Docker):
-
-```powershell
-docker compose up -d db
+```
+1. Upload → Extract text → Chunk (512 tokens, semantic boundaries)
+2. Generate embeddings (VoyageAI) → Store in pgvector
+3. Query → Embed → Cosine similarity search → Top-K retrieval
+4. Build prompt → GPT-4 generation → Stream response + citations
 ```
 
-2) Backend (FastAPI) en local con recarga:
 
-- Copia `backend/.env.local.example` a `backend/.env.local` y ajusta `DATABASE_URL` para apuntar a `localhost` y el puerto mapeado de Postgres (por defecto 5432).
-- Crea y activa un entorno Python 3.12 y instala dependencias:
 
-```powershell
-cd backend
-python -m venv .venv; .\.venv\Scripts\Activate.ps1
-pip install -e .
-uvicorn app.main:app --host 127.0.0.1 --port 8000 --reload
-```
+---
 
-3) Frontend (Next.js) en local con recarga:
+## 🎯 Design Decisions
 
-- Copia `frontend/.env.local.example` a `frontend/.env.local` (apunta a `http://localhost:8000`).
-- Instala deps y corre dev server:
+**Architecture:** Repository pattern + dependency injection for testability and maintainability.
 
-```powershell
-cd frontend
-pnpm install
-pnpm dev
-```
+**RAG Strategy:** Hybrid chunking (semantic + 512 token limit) with metadata filtering for accurate retrieval.
 
-Notas:
-- `docker compose up -d db` levanta solo Postgres; no es necesario iniciar `frontend`/`backend` en Docker para desarrollo.
-- El backend ahora toma `BACKEND_PORT` (por defecto 8000) y no colisiona con Next (3000).
-- El backend carga `.env.local` si existe; de lo contrario, usa `.env` (útil para separar Docker vs local).
+**Trade-offs:** PDF parsing struggles with complex tables; large docs split into chunks; embedding costs scale with volume.
+
+**Roadmap:** Rate limiting → Multi-tenant orgs → Redis caching → Multimodal RAG
+
+
+
+## 🛠️ Technical Highlights
+
+**Backend:** Clean Architecture (Router → Service → Repository) · Async/await · Custom error handling · Argon2 + JWT auth · FastAPI DI
+
+**AI/ML:** Full RAG pipeline (not just PDF chat) · Production pgvector indexing · Embedding batching + cost tracking · Prompt optimization
+
+**Frontend:** Next.js App Router (SSR + SSE streaming) · TypeScript · shadcn/ui components
+
+**DevOps:** Docker multi-stage builds · Environment validation · Health checks
+
+**Approach:** Clear docs · Explicit trade-offs · Business-focused problem solving  
+
+---
+
+## 📚 Resources
+
+[Architecture Diagrams](docs/c4/) · [Data Model](docs/data-model/datamodel.md) · [LangChain RAG](https://python.langchain.com/docs/use_cases/question_answering/) · [pgvector](https://github.com/pgvector/pgvector)
+
+---
+
+## 📝 License
+
+This project is licensed under the **MIT License** – see the [LICENSE](LICENSE) file for details.
+
+---
+
+
+
+## 👤 Contact & Connect
+
+**Alex Ariza Herrera**  
+Full-Stack Engineer | AI/ML Enthusiast | Open to Remote Opportunities
+
+- 💼 **LinkedIn:** [linkedin.com/in/alexarizaherrera](https://linkedin.com/in/alexarizaherrera)
+- 🌐 **Portfolio:** [alexariza.dev](https://alexariza.dev)
+- 📧 **Email:** alex.ariza@example.com
+- 🐙 **GitHub:** [@aarizah](https://github.com/aarizah)
+
+---
+
+<div align="center">
+  
+**⭐ If this project helped you, consider starring it on GitHub!**
+
+</div>

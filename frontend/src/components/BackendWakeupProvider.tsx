@@ -8,11 +8,7 @@ import { ServerStartup } from "@/components/ServerStartup";
  * Shows a loading screen until the backend is ready.
  * Used in the root layout to ensure backend is ready before user interactions.
  */
-export function BackendWakeupProvider({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export function BackendWakeupProvider({children}: {children: React.ReactNode}) {
   const { isReady } = useBackendWakeup();
   
   if (!isReady) {

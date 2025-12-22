@@ -11,7 +11,7 @@ import { settings } from "@/lib/settings";
  */
 export function useBackendWakeup() {
   const hasWokenUp = useRef(false);
-  const [isReady, setIsReady] = useState(false);
+  const [isReady, setIsReady] = useState(true);
 
   useEffect(() => {
     // Only wake up once per session

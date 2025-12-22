@@ -13,7 +13,7 @@ interface FeaturesSectionProps {
 
 export function FeaturesSection({ features }: FeaturesSectionProps) {
   return (
-    <section className="py-20 px-4 sm:px-6 lg:px-8 bg-background">
+    <section className="py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-background to-muted/30">
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-16">
           <h2 className="text-4xl font-bold text-foreground mb-4">
@@ -26,10 +26,10 @@ export function FeaturesSection({ features }: FeaturesSectionProps) {
 
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
           {features.map((feature, index) => (
-            <Card key={index} className="p-6 hover:shadow-xl transition-all duration-300 border-0 shadow-lg">
+            <Card key={index} className="p-6 hover:shadow-xl hover:shadow-primary/10 transition-all duration-300 border border-border/50 hover:border-primary/30 bg-card/80 backdrop-blur-sm">
               <div className="text-center space-y-4">
-                <div className="w-16 h-16 bg-accent/20 rounded-2xl flex items-center justify-center mx-auto">
-                  <feature.icon className="w-8 h-8 text-accent" />
+                <div className="w-16 h-16 bg-gradient-to-br from-primary/20 to-accent/20 rounded-2xl flex items-center justify-center mx-auto">
+                  <feature.icon className="w-8 h-8 text-primary" />
                 </div>
                 <h3 className="text-xl font-semibold text-card-foreground">{feature.title}</h3>
                 <p className="text-muted-foreground leading-relaxed">{feature.description}</p>
