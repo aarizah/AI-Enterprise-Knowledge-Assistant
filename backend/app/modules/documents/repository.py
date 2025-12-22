@@ -1,6 +1,7 @@
 from sqlalchemy.orm import Session
 from app.modules.documents.models import Document
 from typing import List, Optional
+from pathlib import Path
 
 
 class DocumentRepository:
@@ -37,6 +38,24 @@ class DocumentRepository:
     def get_document_by_filename(self, filename: str) -> Optional[Document]:
         """Obtener un documento por su nombre de archivo"""
         return self.db.query(Document).filter(Document.filename == filename).first()
+    
+    def generate_unique_filename(self, filename: str) -> str:
+        """Generar un nombre de archivo único si ya existe"""
+        path = Path(filename)
+        stem = path.stem  # nombre sin extensión
+        suffix = path.suffix  # .pdf, .docx, etc.
+        
+        # Verificar si el nombre original ya existe
+        if not self.get_document_by_filename(filename):
+            return filename
+        
+        # Buscar un nombre único incrementando el contador
+        counter = 1
+        while True:
+            new_filename = f"{stem}_{counter}{suffix}"
+            if not self.get_document_by_filename(new_filename):
+                return new_filename
+            counter += 1
 
     def get_document_by_filename_and_user(self, filename: str, user_id: int) -> Optional[Document]:
         """Obtener un documento por su nombre de archivo y usuario"""

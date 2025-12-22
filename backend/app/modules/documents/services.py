@@ -57,27 +57,22 @@ class DocumentService:
         documents = []
         for file_path in file_paths:
             file_info = storage.get_file_info(file_path)
-            existing_doc = self.repository.get_document_by_filename_and_user(file_info["filename"], user.id)
+            original_filename = file_info["filename"]
             
-            if existing_doc:
-                self.repository.update_document_metadata(
-                    existing_doc.id,
-                    file_path=file_info["file_path"],
-                    file_size_bytes=file_info["file_size_bytes"],
-                    status="uploaded"
-                )
-                documents.append(existing_doc)
-            else:
-                document = self.repository.create_document(
-                    filename=file_info["filename"],
-                    file_path=file_info["file_path"],
-                    file_type=file_info["file_type"],
-                    chunks_count=0,
-                    file_size_bytes=file_info["file_size_bytes"],
-                    user_id=user.id,
-                    status="uploaded"
-                )
-                documents.append(document)
+            # Generar un nombre único si ya existe en la base de datos
+            unique_filename = self.repository.generate_unique_filename(original_filename)
+            
+            # Crear el documento con el nombre único
+            document = self.repository.create_document(
+                filename=unique_filename,
+                file_path=file_info["file_path"],
+                file_type=file_info["file_type"],
+                chunks_count=0,
+                file_size_bytes=file_info["file_size_bytes"],
+                user_id=user.id,
+                status="uploaded"
+            )
+            documents.append(document)
         
         return documents
     # Security Section
