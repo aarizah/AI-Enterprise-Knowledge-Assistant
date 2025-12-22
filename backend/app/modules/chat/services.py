@@ -12,7 +12,7 @@ import time
 class ChatService:
     def answer_query(self, query: str, request, user: dict, db):
         vector_start = time.time()
-        chunks = retrieve_relevant_chunks(query, top_k=5)
+        chunks = retrieve_relevant_chunks(query, user_id=user.id, top_k=5)
         if not chunks:
             return {
                 "answer": "I don't have any relevant information to answer that question.",

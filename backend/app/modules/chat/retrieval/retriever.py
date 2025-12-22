@@ -1,7 +1,7 @@
 from typing import List, Dict
 from app.modules.documents.indexing_pipeline.embeddings.embedder import Embedder
 from sqlalchemy import select, func
-from app.modules.documents.models import Embedding
+from app.modules.documents.models import Embedding, Document
 from app.core.database import SessionLocal
 
 
@@ -27,9 +27,14 @@ def _normalize_relevance_score(raw_score: float) -> float:
         return 95 + ((raw_score - 50) / 50) * 5
 
 
-def retrieve_relevant_chunks(query: str, top_k: int = 5) -> List[Dict[str, any]]:
+def retrieve_relevant_chunks(query: str, user_id: int, top_k: int = 5) -> List[Dict[str, any]]:
     """
-    Retrieve the most relevant chunks for a given query.
+    Retrieve the most relevant chunks for a given query from the user's documents.
+    
+    Args:
+        query: The search query
+        user_id: The ID of the user to filter documents by
+        top_k: Number of top results to return
     
     Returns chunks with relevance scores calculated from cosine similarity:
     - relevance_score: cosine similarity (0-1, higher is more relevant)
@@ -43,6 +48,8 @@ def retrieve_relevant_chunks(query: str, top_k: int = 5) -> List[Dict[str, any]]
         
         stmt = (
             select(Embedding, distance_calc.label('cosine_distance'))
+            .join(Document, Embedding.document_id == Document.id)
+            .where(Document.user_id == user_id)
             .order_by(distance_calc)
             .limit(top_k)
         )
